@@ -1,4 +1,5 @@
 @import './base.css';
+@import './app-main-layout.scss';
 
 #app {
   max-width: 100%;

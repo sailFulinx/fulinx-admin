@@ -1,5 +1,4 @@
 // init preference
-import { useAppStore } from '@/stores/app'
 import { usePreferenceStore } from '@/stores/preference'
 import { setupI18n } from '@/utils/i18n'
 
@@ -14,7 +13,7 @@ import { initPermission } from './permission'
 
 import router from './router'
 
-import './assets/main.css'
+import './assets/css/main.css'
 import '@unocss/reset/tailwind.css'
 // 引入动画
 import 'animate.css'

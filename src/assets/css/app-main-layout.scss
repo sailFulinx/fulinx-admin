@@ -1,0 +1,149 @@
+.theme-card {
+  background-color: #f1f1f2;
+}
+.app-main {
+  /* 50= navbar  50  */
+  height: calc(100vh - 86px);
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+//main-container全局样式
+.view-page {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 84px);
+  // background-color: #f8f8f8;
+  flex-direction: column;
+  overflow: hidden;
+  .view-header {
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 1px 3px #eee;
+    z-index: 9;
+    &.no-shadow {
+      box-shadow: none !important;
+    }
+  }
+  .view-left {
+    width: 25%;
+    height: 100%;
+    border-right: 1px solid #eee;
+
+    .view-left-header {
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 1px 3px #eee;
+      z-index: 9;
+      &.no-shadow {
+        box-shadow: none !important;
+      }
+    }
+
+    .view-left-main {
+      height: 100%;
+      width: 100%;
+      padding: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      &::-webkit-scrollbar {
+        width: 16px;
+        display: block;
+        background: transparent;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        border: 6px solid transparent;
+        display: block;
+        background: #9f9f9f;
+        border-radius: 10px;
+        background-clip: padding-box;
+      }
+    }
+    .view-left-footer-fixed {
+      // width: 100%;
+      padding: 0 20px;
+      position: fixed;
+      bottom: 10px;
+    }
+  }
+
+  .view-right {
+    width: 80%;
+    padding: 0px;
+  }
+
+  .view-main {
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+      width: 16px;
+      display: block;
+      background: transparent;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      border: 6px solid transparent;
+      display: block;
+      background: #9f9f9f;
+      border-radius: 10px;
+      background-clip: padding-box;
+    }
+  }
+
+  .view-footer {
+    width: 100%;
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+
+  .view-footer-fixed {
+    width: 100%;
+    padding: 0 20px;
+    position: fixed;
+    bottom: 10px;
+  }
+}
+
+.page-title {
+  padding: 0;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.content-title {
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+.pa-0 {
+  padding: 0 !important;
+}
+
+.px-0 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.treeIcon {
+  margin-left: auto;
+  padding-right: 15px;
+}
+.tree-node {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
