@@ -1,40 +1,11 @@
 import config from '../../package.json'
 
-/* eslint-disabled */
-// tslint:disable
-// @ts-nocheck
-// JSON
-export const jsonParse = obj => {
+export const jsonParse = (obj: any) => {
   return JSON.parse(JSON.stringify(obj))
 }
 
-// console.log()
-export const log = console.log
-
-// log 深拷贝
-export const logs = (...args) => {
-  args.forEach(item => {
-    log(jsonParse(item))
-  })
-  console.trace('定位')
-}
-
-export const regModel = {
-  float: /^\d+(\.\d+)?$/g, // 只能匹配数字和小数
-  int: /^\d+$/, // 整数
-  tel: /^1\d{10}$/, // 简化验证手机
-  userPass: /^([0-9a-z]{6,16})$/i,
-  email: /^[\w-]+@[\w-]+(\.[\w-]+)+$/,
-  test(reg, val) {
-    const result = this[reg].test(val)
-    this.float.lastIndex = 0
-    return result
-  },
-}
-regModel.float.lastIndex = 0
-
 // url 参数
-export const getParam = function (name: string, urlString: string) {
+export const getParam = (name: string, urlString: string) => {
   const url = urlString || location.href
   const pattern = new RegExp(`[?&]${name}=([^&]+)`, 'g')
   const matcher = pattern.exec(url)
@@ -42,9 +13,11 @@ export const getParam = function (name: string, urlString: string) {
   if (matcher != null) {
     try {
       items = decodeURIComponent(decodeURIComponent(matcher[1]))
+    // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (e) {
       try {
         items = decodeURIComponent(matcher[1])
+      // eslint-disable-next-line unused-imports/no-unused-vars
       } catch (e) {
         items = matcher[1]
       }
@@ -105,26 +78,6 @@ export function transTime(val: Date) {
 export function convertTimeFormat(time: string): string {
   const timeArray = time.split(':')
   return `${timeArray[0]}:${timeArray[1]}`
-}
-
-export function formatTimeToAll(timeString: string) {
-  const date = new Date()
-  const [hours, minutes] = timeString.split(':')
-  date.setHours(hours, minutes, 0, 0)
-  const formattedDate = date.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' })
-  return new Date(formattedDate)
-}
-
-/**
- * 转换枚举
- * @param val
- * @returns
- */
-export function formatEnum(val: object): [] {
-  const arr = Object.keys(val)
-    .filter(key => !isNaN(Number(val[key])))
-    .map(key => ({ name: key, value: val[key] }))
-  return arr
 }
 
 export function useVersion() {
