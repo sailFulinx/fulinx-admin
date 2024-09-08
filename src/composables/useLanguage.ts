@@ -1,6 +1,6 @@
 import { fetchLanguageListApi } from '@/api/language'
 
-import { useSetStorage } from './useStorage'
+import { useGetStorage, useSetStorage } from './useStorage'
 
 export const useSetLanguages = async (languagePayload?: LanguageListParams) => {
   const { data } = await fetchLanguageListApi(languagePayload || { languageCode: null }).catch(error => {

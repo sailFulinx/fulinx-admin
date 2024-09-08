@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { loginApi } from '@/api/auth'
 import { fetchCaptchaApi } from '@/api/captcha'
+import { useLocale } from '@/hooks/useLocale'
 import { usePermissionStore } from '@/stores/permission'
 
 import type { RouteRecordRaw } from 'vue-router'
+
+console.log('view')
 
 const { t: $t } = useLocale()
 

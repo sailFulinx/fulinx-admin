@@ -1,3 +1,4 @@
+import { useGetPreference, useInitPreference } from '@/hooks/usePreference'
 import { defineStore } from 'pinia'
 
 export const usePreferenceStore = defineStore('preference', () => {
