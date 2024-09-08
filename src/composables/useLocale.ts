@@ -1,4 +1,5 @@
-import { i18n } from '@/plugins/vueI18n'
+import { useCreateI18n } from '@/utils/i18n'
+import type { createI18n } from 'vue-i18n'
 
 interface I18nGlobalTranslation {
   (key: string): string
@@ -21,7 +22,9 @@ const getKey = (namespace: string | undefined, key: string) => {
   return `${namespace}.${key}`
 }
 
-export const useI18n = (
+const i18n: ReturnType<typeof createI18n> = await useCreateI18n()
+
+export const useLocale = (
   namespace?: string,
 ): {
   t: I18nGlobalTranslation

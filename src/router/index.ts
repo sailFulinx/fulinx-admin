@@ -1,9 +1,7 @@
 import { Layout } from '@/utils/routerHelper'
+
 import { createRouter, createWebHashHistory } from 'vue-router'
-
 import type { RouteRecordRaw } from 'vue-router'
-
-const { t: $t } = useI18n()
 
 export const constantRouterMap: AppRouteRecordRaw[] = [
   {
@@ -38,7 +36,7 @@ export const constantRouterMap: AppRouteRecordRaw[] = [
     name: 'Login',
     meta: {
       hidden: true,
-      title: $t('router.login'),
+      title: t('router.login'),
       noTagsView: true,
     },
   },
@@ -61,7 +59,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     redirect: '/dashboard/analysis',
     name: 'Dashboard',
     meta: {
-      title: $t('router.dashboard'),
+      title: t('router.dashboard'),
       icon: 'ant-design:dashboard-filled',
       alwaysShow: true,
     },
@@ -71,7 +69,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Dashboard/Analysis.vue'),
         name: 'Analysis',
         meta: {
-          title: $t('router.analysis'),
+          title: t('router.analysis'),
           noCache: true,
           affix: true,
         },
@@ -84,7 +82,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     redirect: '/category/list',
     name: 'Category',
     meta: {
-      title: $t('router.category'),
+      title: t('router.category'),
       icon: 'ant-design:appstore-outlined',
     },
     children: [
@@ -93,7 +91,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       //   component: () => import('@/views/Category/index.vue'),
       //   name: 'CategoryList',
       //   meta: {
-      //     title: $t('router.category'),
+      //     title: t('router.category'),
       //     icon: 'ant-design:appstore-outlined',
       //     noCache: true,
       //   },
@@ -103,7 +101,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Category/List.vue'),
         name: 'CategoryList',
         meta: {
-          title: $t('router.category'),
+          title: t('router.category'),
           icon: 'ant-design:appstore-outlined',
           noCache: true,
         },
@@ -113,7 +111,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Category/Create.vue'),
         name: 'CreateCategory',
         meta: {
-          title: `${$t('common.create')}` + `${$t('category.name')}`,
+          title: `${t('common.create')}` + `${t('category.name')}`,
           noCache: true,
           hidden: true,
           canTo: true,
@@ -126,7 +124,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
         component: () => import('@/views/Category/Edit.vue'),
         name: 'EditCategory',
         meta: {
-          title: `${$t('common.edit')} ${$t('category.name')}`,
+          title: `${t('common.edit')} ${t('category.name')}`,
           noCache: true,
           hidden: true,
           canTo: true,

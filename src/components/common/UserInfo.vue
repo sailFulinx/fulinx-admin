@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { useI18n } from '@/hooks/web/useI18n'
 import { resetRouter } from '@/router'
 import { useTagsViewStore } from '@/stores/tagsView'
 import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 
 const tagsViewStore = useTagsViewStore()
-
-const { t } = useI18n()
 
 const { replace } = useRouter()
 
@@ -37,9 +34,7 @@ const loginOut = () => {
     <template #dropdown>
       <ElDropdownMenu>
         <ElDropdownItem divided>
-          <div @click="loginOut">
-            {{ t('common.loginOut') }}
-          </div>
+          <div @click="loginOut" />
         </ElDropdownItem>
       </ElDropdownMenu>
     </template>

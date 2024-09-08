@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import { useVersion } from '@/composables/general'
-import { useI18n } from '@/hooks/web/useI18n'
 import { useAppStore } from '@/stores/app'
 import { underlineToHump } from '@/utils'
 
 import LoginForm from './components/LoginForm.vue'
 
 const appStore = useAppStore()
-
-const { t } = useI18n()
 </script>
 
 <template>
-  <div class="h-[100%] relative <xl:bg-v-dark <sm:px-10px <xl:px-10px <md:px-10px">
+  <div class="h-[100%] relative">
     <div class="relative h-full flex mx-auto">
       <div class="flex-1 bg-gray-500 bg-opacity-20 relative p-30px ">
         <div class="flex items-center relative text-white">
@@ -22,16 +19,14 @@ const { t } = useI18n()
           <TransitionGroup appear tag="div" enter-active-class="animate__animated animate__bounceInLeft">
             <img key="1" src="@/assets/svgs/login-box-bg.svg" alt="" class="w-350px">
             <div key="2" class="text-3xl text-white">
-              {{ t('login.welcome') }}
+              欢迎
             </div>
-            <div key="3" class="mt-5 font-normal text-white text-18px">
-              {{ t('login.message') }}
-            </div>
+            <div key="3" class="mt-5 font-normal text-white text-18px" />
           </TransitionGroup>
         </div>
         <div class="flex items-center relative text-white">
           <!-- <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" /> -->
-          <span class="text-16px">{{ t('common.copyright') }} {{ useVersion() }}</span>
+          <span class="text-16px">{{ useVersion() }}</span>
         </div>
       </div>
       <div class="flex-1 p-30px <sm:p-10px dark:bg-v-dark relative">
