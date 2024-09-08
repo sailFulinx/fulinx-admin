@@ -6,8 +6,6 @@ import { usePermissionStore } from '@/stores/permission'
 
 import type { RouteRecordRaw } from 'vue-router'
 
-console.log('view')
-
 const { t: $t } = useLocale()
 
 const permissionStore = usePermissionStore()
@@ -26,9 +24,9 @@ const form = ref<LoginRequestType>({
 })
 
 const rules = reactive({
-  username: [{ required: true, type: 'string', message: 'login.usernamePlaceholder', trigger: 'blur' }],
-  password: [{ required: true, type: 'string', message: 'login.passwordPlaceholder', trigger: 'blur' }],
-  captchaValue: [{ required: true, type: 'string', message: 'login.captchaValuePlaceholder', trigger: 'blur' }],
+  username: [{ required: true, type: 'string', message: $t('login.usernamePlaceholder'), trigger: 'blur' }],
+  password: [{ required: true, type: 'string', message: $t('login.passwordPlaceholder'), trigger: 'blur' }],
+  captchaValue: [{ required: true, type: 'string', message: $t('login.captchaValuePlaceholder'), trigger: 'blur' }],
 })
 
 const loading = reactive({
@@ -97,27 +95,27 @@ const signIn = async () => {
 <template>
   <div>
     <h1 class="text-center mb-5 font-bold text-2xl">
-      登录
+      {{ $t('login.login') }}
     </h1>
     <ElForm ref="formRef" :model="form" label-width="120px" label-position="top" size="large" :rules="rules">
-      <ElFormItem label="用户名" prop="username">
-        <ElInput v-model="form.username" class="input-line" clearable placeholder="用户名" />
+      <ElFormItem :label="$t('login.username')" prop="username">
+        <ElInput v-model="form.username" class="input-line" clearable :placeholder="$t('login.usernamePlaceholder')" />
       </ElFormItem>
-      <ElFormItem label="密码" prop="password">
+      <ElFormItem :label="$t('login.password')" prop="password">
         <ElInput
           v-model="form.password"
           class="input-line"
           clearable
           type="password"
           show-password
-          placeholder="密码"
+          :placeholder="$t('login.passwordPlaceholder')"
         />
       </ElFormItem>
-      <ElFormItem label="验证码" prop="captchaValue">
+      <ElFormItem :label="$t('login.captchaValue')" prop="captchaValue">
         <ElInput
           v-model="form.captchaValue"
           class="input-line-captcha"
-          placeholder="验证码"
+          :placeholder="$t('login.captchaValuePlaceholder')"
           :input-style="inputStyle"
         >
           <template #suffix>
