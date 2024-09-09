@@ -1,8 +1,9 @@
 <script setup name="Category" lang="ts">
 import { paginationCategoryApi, removeCategoryApi } from '@/api/category'
+import { useLocale } from '@/hooks/useLocale'
 import { ElMessage } from 'element-plus'
 
-const { t: $t } = useI18n()
+const { t: $t } = useLocale()
 const loading = reactive({
   init: false,
 })

@@ -4,7 +4,7 @@ import { createArticle, editArticle, fetchArticleTypeListApi, showArticle } from
 import { listCategoryApi } from '@/api/category'
 import { fetchLanguageListApi } from '@/api/language'
 import { articleStatuses } from '@/data/article'
-import { useTagsViewStore } from '@/stores/modules/tagsView'
+import { useTagsViewStore } from '@/stores/tagsView'
 import { convertCustomTypeValue } from '@/utils/article'
 import { ElInput, ElMessage } from 'element-plus'
 

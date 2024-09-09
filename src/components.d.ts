@@ -39,7 +39,7 @@ declare module '@vue/runtime-core' {
     IconTooling: typeof import('./components/icons/IconTooling.vue')['default']
     ImageTextDialog: typeof import('./components/Upload/Modules/ImageTextDialog.vue')['default']
     Logo: typeof import('./components/common/Logo.vue')['default']
-    Menu: typeof import('./components/Menu/src/Menu.vue')['default']
+    Menu: typeof import('./components/common/Menu.vue')['default']
     ModuleLink: typeof import('./components/Theme/Components/Modules/ModuleLink.vue')['default']
     ModuleReadContent: typeof import('./components/Theme/Components/Modules/ModuleReadContent.vue')['default']
     ModuleSubMenu: typeof import('./components/Theme/Components/Modules/ModuleSubMenu.vue')['default']

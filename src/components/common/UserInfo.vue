@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useLocale } from '@/hooks/useLocale'
 import { resetRouter } from '@/router'
 import { useTagsViewStore } from '@/stores/tagsView'
 import { ElDropdown, ElDropdownItem, ElDropdownMenu, ElMessageBox } from 'element-plus'
@@ -7,6 +8,8 @@ import { useRouter } from 'vue-router'
 const tagsViewStore = useTagsViewStore()
 
 const { replace } = useRouter()
+
+const { t } = useLocale()
 
 const loginOut = () => {
   ElMessageBox.confirm(t('common.loginOutMessage'), t('common.reminder'), {
@@ -28,13 +31,15 @@ const loginOut = () => {
 <template>
   <ElDropdown trigger="click">
     <div class="flex items-center">
-      <img src="@/assets/imgs/avatar.jpg" alt="" class="w-[calc(var(--logo-height)-25px)] rounded-[50%]">
-      <span class="<lg:hidden text-14px pl-[5px] text-[var(--top-header-text-color)]">Archer</span>
+      <img src="@/assets/imgs/avatar.jpg" alt="" class="w-36px rounded-[50%]">
+      <span class="text-13px pl-3">Archer</span>
     </div>
     <template #dropdown>
       <ElDropdownMenu>
         <ElDropdownItem divided>
-          <div @click="loginOut" />
+          <div @click="loginOut">
+            {{ t('common.loginOut') }}
+          </div>
         </ElDropdownItem>
       </ElDropdownMenu>
     </template>

@@ -1,5 +1,6 @@
 <script setup name="RoleBase" lang="ts">
 import { fetchPermissionListApi } from '@/api/permission'
+import { useLocale } from '@/hooks/useLocale'
 import { ElMessage, ElTree } from 'element-plus'
 import { debounce } from 'lodash'
 
@@ -59,7 +60,7 @@ watch(
   },
   { immediate: true, deep: true },
 )
-const { t: $t } = useI18n()
+const { t: $t } = useLocale()
 
 const rules = reactive({
   roleName: [{ required: true, type: 'string', message: $t('user.rules.roleName'), trigger: 'blur' }],

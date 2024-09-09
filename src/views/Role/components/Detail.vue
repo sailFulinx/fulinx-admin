@@ -1,14 +1,15 @@
 <script setup name="RoleDetail" lang="ts">
 import { createRoleApi, editRoleApi, fetchRoleDetailApi } from '@/api/role'
+import { useLocale } from '@/hooks/useLocale'
 import { ElMessage } from 'element-plus'
-import { debounce } from 'lodash'
 
+import { debounce } from 'lodash'
 import Base from './Base.vue'
 
 const props = defineProps({
   id: {
     type: Number,
-    default: false,
+    default: 0,
   },
   actionType: {
     type: String as () => 'none' | 'add' | 'edit',
@@ -17,7 +18,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['getList', 'handleChangeVisible'])
 const activeTab = ref('base')
-const { t: $t } = useI18n()
+const { t: $t } = useLocale()
 const pageTitle = ref('')
 
 const disabled = ref(false)

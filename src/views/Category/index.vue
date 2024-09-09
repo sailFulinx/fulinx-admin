@@ -1,11 +1,12 @@
 <script setup name="Category" lang="ts">
 import { paginationCategoryApi, removeCategoryApi } from '@/api/category'
-import { usePreferenceStore } from '@/stores/modules/preference'
-import { ElMessage } from 'element-plus'
+import { useLocale } from '@/hooks/useLocale'
+import { usePreferenceStore } from '@/stores/preference'
 
+import { ElMessage } from 'element-plus'
 import CategoryDialog from './Components/CategoryDialog.vue'
 
-const { t: $t } = useI18n()
+const { t: $t } = useLocale()
 const loading = reactive({
   init: false,
 })

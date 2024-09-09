@@ -1,6 +1,5 @@
-<script lang="ts">
-import { useAppStore } from '@/stores/app'
-import { usePermissionStore } from '@/stores/permission'
+<script setup lang="ts">
+import { asyncRouterMap } from '@/router'
 import { pathResolve } from '@/utils/routerHelper'
 import { filter, treeToList } from '@/utils/tree'
 import { useRouter } from 'vue-router'
@@ -8,10 +7,6 @@ import { useRouter } from 'vue-router'
 import type { RouteMeta } from 'vue-router'
 
 const { currentRoute } = useRouter()
-const appStore = useAppStore()
-const permissionStore = usePermissionStore()
-
-const breadcrumbIcon = appStore.getBreadcrumbIcon
 
 const levelList = ref<AppRouteRecordRaw[]>([])
 
@@ -41,13 +36,13 @@ const filterBreadcrumb = (routes: AppRouteRecordRaw[], parentPath = ''): AppRout
   return res
 }
 
-const menuRouters = computed(() => {
-  const routers = permissionStore.getRouters
-  return filterBreadcrumb(routers)
-})
+const menuRouters = () => {
+  console.log(asyncRouterMap)
+  return filterBreadcrumb(asyncRouterMap)
+}
 
 const getBreadcrumb = () => {
-  levelList.value = filter<AppRouteRecordRaw>(menuRouters.value, node => {
+  levelList.value = filter<AppRouteRecordRaw>(menuRouters(), node => {
     return node.name === currentRoute.value.name
   })
 }
@@ -65,9 +60,7 @@ watch(
   { immediate: true },
 )
 
-onMounted(() => {
-  getBreadcrumb()
-})
+getBreadcrumb()
 </script>
 
 <template>
@@ -78,12 +71,12 @@ onMounted(() => {
         :key="item.name"
         :to="{ path: item.redirect === 'noredirect' ? '' : item.path }"
       >
-        <template v-if="item.meta?.icon && breadcrumbIcon">
+        <template v-if="item.meta?.icon">
           <Icon :icon="item.meta.icon" class="mr-[5px]" />
-          {{ t(item.meta?.title) }}
+          {{ item.meta?.title }}
         </template>
         <template v-else>
-          {{ t(item.meta?.title) }}
+          {{ item.meta?.title }}
         </template>
       </ElBreadcrumbItem>
     </TransitionGroup>

@@ -19,11 +19,6 @@ const listQuery = reactive<ArticleListParams & Pagination>({
 })
 const selectedList = ref<number[]>([])
 
-const init = async () => {
-  loading.list = true
-  await getList()
-}
-
 const getList = async () => {
   loading.list = true
   if (listQuery.articleName === '') {
@@ -35,6 +30,11 @@ const getList = async () => {
   })
   listResult.value = data
   loading.list = false
+}
+
+const init = async () => {
+  loading.list = true
+  await getList()
 }
 
 const pagination = (val: PaginationComponentDataType) => {

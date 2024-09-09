@@ -1,13 +1,4 @@
 <script setup lang="ts">
-import { useAppStore } from '@/stores/app'
-import { computed, nextTick, ref } from 'vue'
-
-// 获取 store 中的数据
-const appStore = useAppStore()
-const breadcrumb = computed(() => appStore.getBreadcrumb)
-const hamburger = computed(() => appStore.getHamburger)
-const locale = computed(() => appStore.getLocale)
-
 // 引用 Preference 组件实例
 const preferenceDialogRef = ref()
 
@@ -19,20 +10,17 @@ const handleOpenPreference = async () => {
 </script>
 
 <template>
-  <div
-    class="h-[var(--top-tool-height)] relative px-[var(--top-tool-p-x)] flex items-center justify-between dark:bg-[var(--el-bg-color)]"
-  >
-    <div class="h-full flex items-center">
-      <Collapse v-if="hamburger" class="hover-trigger" color="var(--top-header-text-color)" />
-      <Breadcrumb v-if="breadcrumb" />
+  <div class="flex items-center justify-between w-full">
+    <div class="flex items-center">
+      <Collapse class="hover-trigger" />
+      <Breadcrumb />
     </div>
-    <div class="h-full flex items-center">
-      <LocaleDropdown v-if="locale" class="hover-trigger" color="var(--top-header-text-color)" />
+    <div class="flex items-center">
+      <!-- <LocaleDropdown class="hover-trigger" color="var(--top-header-text-color)" /> -->
       <Icon
         icon="ep:setting"
         class="mx-2 hover-trigger cursor-pointer"
-        color="var(--top-header-text-color)"
-        :size="18"
+        :size="6"
         @click="handleOpenPreference"
       />
       <UserInfo class="hover-trigger" />

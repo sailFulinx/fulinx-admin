@@ -1,7 +1,8 @@
 <script setup name="ProductDetail" lang="ts">
 import { createCategoryApi, editCategoryApi, listCategoryApi, showCategoryApi } from '@/api/category'
-import { usePreferenceStore } from '@/stores/modules/preference'
-import { useTagsViewStore } from '@/stores/modules/tagsView'
+import { useLocale } from '@/hooks/useLocale'
+import { usePreferenceStore } from '@/stores/preference'
+import { useTagsViewStore } from '@/stores/tagsView'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({
@@ -15,7 +16,7 @@ const props = defineProps({
   },
 })
 
-const { t: $t } = useI18n()
+const { t: $t } = useLocale()
 
 const id = Number(useRoute().params.id as unknown)
 

@@ -1,7 +1,7 @@
 d
 <script setup lang="ts">
 import { createTheme, editTheme, showTheme } from '@/api/theme'
-import { useTagsViewStore } from '@/stores/modules/tagsView'
+import { useTagsViewStore } from '@/stores/tagsView'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({

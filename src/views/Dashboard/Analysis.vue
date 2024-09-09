@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import { useLocale } from '@/hooks/useLocale'
 import { THEME_KEY } from 'vue-echarts'
 
 provide(THEME_KEY, 'light')
 
 // import { fetchDashboardAnalyticsApi } from '@/api/dashboard'
 
-const { t: $t } = useI18n()
+const { t: $t } = useLocale()
 
-const dashboardAnalytics = ref<any>({})
+// const dashboardAnalytics = ref<any>({})
 
 const dateRange = ref<string>('')
 
@@ -56,38 +57,6 @@ const handleChangeDateRange = async () => {
           />
         </div>
       </div>
-      <!-- <div class="grid grid-cols-5 gap-4 mb-5">
-        <div class="p-10 bg-white">
-          <div class="text-center mb-2"><SIcon name="order" size="28" color="#ff0000"></SIcon></div>
-          <div class="text-center mb-2">订单总数</div>
-          <div class="text-center text-xl font-bold">{{ dashboardAnalytics.orderCount }}</div>
-        </div>
-        <div class="p-10 bg-white">
-          <div class="text-center mb-2"><SIcon name="check-one" size="28" color="#ff0000"></SIcon></div>
-          <div class="text-center mb-2">已完成订单数量</div>
-          <div class="text-center text-xl font-bold">{{ dashboardAnalytics.completedOrderCount }}</div>
-        </div>
-        <div class="p-10 bg-white">
-          <div class="text-center mb-2"><SIcon name="order" size="28" color="#ff0000"></SIcon></div>
-          <div class="text-center mb-2">未完成订单数量</div>
-          <div class="text-center text-xl font-bold">
-            {{ dashboardAnalytics.orderCount - dashboardAnalytics.completedOrderCount }}
-          </div>
-        </div>
-        <div class="p-10 bg-white">
-          <div class="text-center mb-2"><SIcon name="toolkit" size="28" color="#ff0000"></SIcon></div>
-          <div class="text-center mb-2">返修订单数量</div>
-          <div class="text-center text-xl font-bold">{{ dashboardAnalytics.repairedOrderCount }}</div>
-        </div>
-        <div class="p-10 bg-white">
-          <div class="text-center mb-2"><SIcon name="tool" size="28" color="#ff0000"></SIcon></div>
-          <div class="text-center mb-2">返修率</div>
-          <div class="text-center text-xl font-bold">{{ dashboardAnalytics.repairedPercent }}%</div>
-        </div>
-      </div>
-      <div class="px-5 py-5 bg-white mb-5 flex justify-between items-center">
-        <v-chart class="chart" :option="option" autoresize />
-      </div> -->
     </div>
   </div>
 </template>

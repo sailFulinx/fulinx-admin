@@ -1,13 +1,14 @@
 <script setup name="Role" lang="ts">
 import { fetchRolePaginationApi, removeRoleApi } from '@/api/role'
+import { useLocale } from '@/hooks/useLocale'
 import { ElMessage, ElTreeV2 } from 'element-plus'
+
 import { debounce } from 'lodash'
 
 import type { TreeNodeData } from 'element-plus/es/components/tree-v2/src/types'
-
 import Detail from './components/Detail.vue'
 
-const { t: $t } = useI18n()
+const { t: $t } = useLocale()
 const loading = ref(false)
 const selection = ref<number[]>([])
 

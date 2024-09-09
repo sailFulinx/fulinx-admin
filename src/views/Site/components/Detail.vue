@@ -1,6 +1,6 @@
 d
 <script setup lang="ts">
-import { useTagsViewStore } from '@/stores/modules/tagsView'
+import { useTagsViewStore } from '@/stores/tagsView'
 import { ElMessage } from 'element-plus'
 
 import Base from './Modules/Base.vue'

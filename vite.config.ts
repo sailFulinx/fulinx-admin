@@ -110,7 +110,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         'vue-types',
         'element-plus/es/locale/lang/zh-cn',
         'element-plus/es/locale/lang/en',
-        '@iconify/iconify',
         'axios',
         'qs',
         'echarts',

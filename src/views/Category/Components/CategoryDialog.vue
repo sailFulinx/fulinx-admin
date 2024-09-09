@@ -1,9 +1,10 @@
 <script setup name="ProductDetail" lang="ts">
 import { createCategoryApi, editCategoryApi, listCategoryApi } from '@/api/category'
+import { useLocale } from '@/hooks/useLocale'
 import { ElMessage } from 'element-plus'
 
 const emit = defineEmits(['getList'])
-const { t: $t } = useI18n()
+const { t: $t } = useLocale()
 
 const languages = useGetLanguageList() as LanguageData[]
 

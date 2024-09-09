@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Error } from '@/components/Error'
-import { usePermissionStore } from '@/stores/modules/permission'
+import { usePermissionStore } from '@/stores/permission'
 import { useRouter } from 'vue-router'
 
 const { push } = useRouter()
