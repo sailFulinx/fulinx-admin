@@ -134,24 +134,40 @@ watch(
 
 <template>
   <div>
-    <ElMenu :default-active="activeMenu" active-text-color="var(--accent-200)" :collapse="collapse" class="bg-white border-none" @select="menuSelect">
-      <div v-for="item in routerMap" :key="item?.path" :index="item.indexPath">
-        <ElSubMenu v-if="!item.isMenuItem">
+    <ElMenu :default-active="activeMenu()" :default-openeds="[activeMenu()]" :collapse="collapse" class="bg-white border-none" @select="menuSelect">
+      <div v-for="item in routerMap" :key="item.indexPath">
+        <ElSubMenu
+          v-if="!item.isMenuItem"
+          :index="item.indexPath"
+          :class="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'bg-blue-400 text-white hover:bg-gray-200 hover:text-black' : 'bg-white text-black hover:bg-gray-200 hover:text-black-400'}`"
+        >
           <template #title>
-            <Icon v-if="item?.meta.icon" :icon="item?.meta.icon" :size="4" class="mr-2" />
-            <span>{{ item.title }}</span>
+            <Icon v-if="item?.meta.icon" :icon="item?.meta.icon" :size="4" :color="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'white' : 'black'}`" :class="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'text-white' : 'text-black'} mr-2`" />
+            <span :class="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'text-white' : 'text-black'}  hover:text-black`">
+              {{ item.title }}
+            </span>
           </template>
-          <ElMenuItem v-for="subItem in item.children" :key="subItem?.path" :index="item.fullPath">
+          <ElMenuItem
+            v-for="subItem in item.children"
+            :key="subItem?.indexPath"
+            :index="subItem.indexPath"
+            :class="`${activeMenu() === subItem.indexPath || activeMenu() === subItem?.redirect ? 'text-blue-400' : 'text-black'} hover:text-black`"
+          >
             <template #title>
               <Icon v-if="subItem?.meta.icon" :icon="subItem?.meta.icon" :size="4" class="mr-2" />
               <span>{{ subItem.title }}</span>
             </template>
           </ElMenuItem>
         </ElSubMenu>
-        <ElMenuItem v-else :index="item.fullPath">
+
+        <ElMenuItem
+          v-else
+          :index="item.indexPath"
+          :class="`${activeMenu() === item.indexPath ? 'bg-blue-400 hover:bg-gray-200' : 'bg-white hover:bg-blue-50'} hover:text-black`"
+        >
           <template #title>
-            <Icon v-if="item?.meta.icon" :icon="item?.meta.icon" :size="4" class="mr-2" />
-            <span>{{ item.title }}</span>
+            <Icon v-if="item?.meta.icon" :icon="item?.meta.icon" :size="4" :color="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'white' : 'black'}  hover: black`" :class="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'text-white' : 'text-black'} mr-2`" />
+            <span :class="`${activeMenu() === item.indexPath ? 'text-white' : 'text-black'}`">{{ item.title }}</span>
           </template>
         </ElMenuItem>
       </div>
