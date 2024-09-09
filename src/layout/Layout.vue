@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { useAppStore } from '@/stores/app'
-
-import { ElScrollbar } from 'element-plus'
 import AppView from './components/AppView.vue'
 import ToolHeader from './components/ToolHeader.vue'
 
@@ -42,20 +40,6 @@ const appStore = useAppStore()
       </main>
     </div>
   </div>
-
-  <!-- <section class="w-[100%] h-[100%] relative">
-    <div>
-      <Logo />
-    </div>
-    <div>
-      <ElScrollbar>
-        <div>
-          <ToolHeader class="border-bottom-1 border-solid" />
-        </div>
-        <AppView />
-      </ElScrollbar>
-    </div>
-  </section> -->
 </template>
 
 <style lang="scss" scoped></style>
