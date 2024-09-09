@@ -11,6 +11,8 @@ const loading = reactive({
   init: false,
 })
 
+const tableRef = ref()
+
 const listPayload = reactive<CategoryListParams & Pagination>({
   categoryName: null,
   languageId: usePreferenceStore().preference?.language?.id,
@@ -85,11 +87,6 @@ const handleCreateSubCategory = (val: CategoryData & CommonField) => {
   categoryDialogRef.value.openDialog(false, val)
 }
 
-const handleDelete = async (val: CategoryData & CommonField) => {
-  deleteIds.value = [val.id]
-  await handleMultiDelete()
-}
-
 const handleMultiDelete = async () => {
   if (deleteIds.value.length === 0) {
     ElMessage({
@@ -110,6 +107,11 @@ const handleMultiDelete = async () => {
   ElMessage.success($t('success.remove'))
   loading.init = false
   deleteIds.value = []
+}
+
+const handleDelete = async (val: CategoryData & CommonField) => {
+  deleteIds.value = [val.id]
+  await handleMultiDelete()
 }
 </script>
 

@@ -138,7 +138,6 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       },
     ],
   },
-
   {
     path: '/article',
     component: Layout,
@@ -192,7 +191,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/theme',
     component: Layout,
-    redirect: '/Theme/list',
+    redirect: '/theme/list',
     name: 'Theme',
     meta: {
       title: '主题管理',
@@ -255,7 +254,7 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/site',
     component: Layout,
-    redirect: '/Site/list',
+    redirect: '/site/list',
     name: 'Site',
     meta: {
       title: '网站管理',

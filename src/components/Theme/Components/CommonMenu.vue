@@ -172,7 +172,6 @@ async function getFormData() {
     content: menus.value,
     status: true,
   }
-  console.log(form)
   return form
 }
 

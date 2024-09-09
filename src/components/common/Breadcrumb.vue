@@ -37,7 +37,6 @@ const filterBreadcrumb = (routes: AppRouteRecordRaw[], parentPath = ''): AppRout
 }
 
 const menuRouters = () => {
-  console.log(asyncRouterMap)
   return filterBreadcrumb(asyncRouterMap)
 }
 

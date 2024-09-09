@@ -90,7 +90,6 @@ function changeReadContentValue(v) {
   }
   readContentData.readContentValue = readContentValue
   readContentData.readContentType = readContentType.value
-  console.log(readContentData)
 }
 
 const setReadContentData = async readContentDataVal => {

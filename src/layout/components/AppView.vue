@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { useTagsViewStore } from '@/stores/tagsView'
-// import { Footer } from '@/components/Footer'
-import { computed } from 'vue'
 
 const tagsViewStore = useTagsViewStore()
 
@@ -12,7 +10,7 @@ const getCaches = computed((): string[] => {
 
 <template>
   <section
-    class="app-main p-[var(--app-content-padding)] w-[100%] bg-[var(--app-content-bg-color)] dark:bg-[var(--el-bg-color)]"
+    class="app-main w-full"
   >
     <RouterView>
       <template #default="{ Component, route }">
