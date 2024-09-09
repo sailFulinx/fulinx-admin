@@ -143,7 +143,7 @@ watch(
         >
           <template #title>
             <Icon v-if="item?.meta.icon" :icon="item?.meta.icon" :size="4" :color="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'white' : 'black'}`" :class="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'text-white' : 'text-black'} mr-2`" />
-            <span :class="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'text-white' : 'text-black'}  hover:text-black`">
+            <span v-if="!collapse" :class="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'text-white' : 'text-black'}  hover:text-black`">
               {{ item.title }}
             </span>
           </template>
@@ -166,8 +166,8 @@ watch(
           :class="`${activeMenu() === item.indexPath ? 'bg-blue-400 hover:bg-gray-200' : 'bg-white hover:bg-blue-50'} hover:text-black`"
         >
           <template #title>
-            <Icon v-if="item?.meta.icon" :icon="item?.meta.icon" :size="4" :color="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'white' : 'black'}  hover: black`" :class="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'text-white' : 'text-black'} mr-2`" />
-            <span :class="`${activeMenu() === item.indexPath ? 'text-white' : 'text-black'}`">{{ item.title }}</span>
+            <Icon v-if="item?.meta.icon" :icon="item?.meta.icon" :size="4" :color="`${activeMenu() === item.indexPath || activeMenu() === item?.redirect ? 'white' : 'black'}`" />
+            <span v-if="!collapse" :class="`${activeMenu() === item.indexPath ? 'text-white' : 'text-black'}`">{{ item.title }}</span>
           </template>
         </ElMenuItem>
       </div>
