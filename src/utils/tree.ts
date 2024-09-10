@@ -142,13 +142,6 @@ export const forEach = <T = any>(tree: T[], func: (n: T) => any, config: Partial
 /**
  * @description: Extract tree specified structure
  */
-export const treeMap = <T = any>(treeData: T[], opt: { children?: string, conversion: Fn }): T[] => {
-  return treeData.map(item => treeMapEach(item, opt))
-}
-
-/**
- * @description: Extract tree specified structure
- */
 export const treeMapEach = (
   data: any,
   { children = 'children', conversion }: { children?: string, conversion: Fn },
@@ -170,6 +163,13 @@ export const treeMapEach = (
       ...conversionData,
     }
   }
+}
+
+/**
+ * @description: Extract tree specified structure
+ */
+export const treeMap = <T = any>(treeData: T[], opt: { children?: string, conversion: Fn }): T[] => {
+  return treeData.map(item => treeMapEach(item, opt))
 }
 
 /**
