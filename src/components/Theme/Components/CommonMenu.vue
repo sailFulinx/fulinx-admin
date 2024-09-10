@@ -1,6 +1,7 @@
 <script setup name="ThemeHeaderMenu" lang="ts">
 import { menuTypes } from '@/data/theme'
 import { ElMessage } from 'element-plus'
+import { VueDraggable } from 'vue-draggable-plus'
 
 const props = defineProps<{
   componentData: {
@@ -10,6 +11,7 @@ const props = defineProps<{
 
 const moduleLinkRef = ref()
 const themeSubMenuRef = ref()
+const formRef = ref()
 const dragging = ref(false)
 const uploadSingleRef = ref()
 
@@ -185,27 +187,25 @@ defineExpose({
     <div class="flex px-3 py-3">
       <div class="w-1/3 pr-2">
         <div class="border border-gray-200 px-3 py-3">
-          <Draggable :list="menus" item-key="id" @start="dragging = true" @end="dragEnd">
-            <template #item="{ element, index }">
-              <div class="w-full mb-3">
-                <div
-                  class="w-full flex items-center justify-between px-4 py-3 rounded border cursor-pointer transition duration-200"
-                  :class="[
-                    element.id === currentMenu.id ? 'bg-blue-400 text-white' : 'bg-white text-black hover:bg-gray-100',
-                  ]"
-                  @click="changeMenu(index)"
-                >
-                  <div class="flex items-center space-x-2">
-                    <span><Icon icon="ant-design:holder-outlined" /></span>
-                    <span>{{ element.label }}</span>
-                  </div>
-                  <div v-if="index > 0" class="flex items-center" @click.stop="removeMenu(index)">
-                    <Icon icon="ant-design:close-outlined" />
-                  </div>
+          <VueDraggable v-model="menus" item-key="id" @start="dragging = true" @end="dragEnd">
+            <div v-for="(item, index) in menus" :key="item.id" class="w-full mb-3">
+              <div
+                class="w-full flex items-center justify-between px-4 py-3 rounded border cursor-pointer transition duration-200"
+                :class="[
+                  item.id === currentMenu.id ? 'bg-blue-400 text-white' : 'bg-white text-black hover:bg-gray-100',
+                ]"
+                @click="changeMenu(index)"
+              >
+                <div class="flex items-center space-x-2">
+                  <span><Icon icon="ant-design:holder-outlined" /></span>
+                  <span>{{ item.label }}</span>
+                </div>
+                <div v-if="index > 0" class="flex items-center" @click.stop="removeMenu(index)">
+                  <Icon icon="ant-design:close-outlined" />
                 </div>
               </div>
-            </template>
-          </Draggable>
+            </div>
+          </VueDraggable>
 
           <ElButton icon="el-icon-plus" class="w-full" @click="addMenu">
             新增一级菜单
@@ -214,10 +214,10 @@ defineExpose({
       </div>
       <div class="w-2/3 pl-2">
         <ElCard shadow="never">
-          <template #header class="clearfix">
+          <template #header>
             <span>{{ currentMenu.label }}</span>
           </template>
-          <ElForm ref="form" label-width="120px">
+          <ElForm ref="formRef" label-width="120px">
             <ElFormItem label="菜单名称" required>
               <ElInput
                 v-model="currentMenu.label"

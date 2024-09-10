@@ -3,13 +3,21 @@ import { articleList } from '@/api/article'
 import { listCategoryApi } from '@/api/category'
 import { linkTypes } from '@/data/theme'
 
-const emit = defineEmits(['changeLinkType'])
+defineEmits(['changeLinkType'])
 const linkType = ref<string>('home')
 const linkValue = ref<string>('')
+const isCanSettingCustomRoute = ref<boolean>(false)
+
+const isSettingCustomRoute = ref<boolean>(false)
+
+const customRoute = ref<string>('')
+
 const linkData = reactive<LinkData>({
   linkType: 'home',
   linkUrl: '/',
   linkValue: '/',
+  isSettingCustomRoute: false,
+  customRoute: '',
   label: '',
   children: [],
 })
@@ -24,7 +32,7 @@ const categories = ref<ListCategoryRes>({
   total: 0,
 })
 const categoriesRef = ref()
-let prevLinkType = ''
+let prevLinkType: string = ''
 const status = reactive({
   category: false,
   article: false,
@@ -43,10 +51,15 @@ const domRefs = {
   category: categoriesRef,
 }
 
-const setLinkData = async linkDataVal => {
+const setLinkData = async (linkDataVal: LinkData) => {
   linkType.value = linkDataVal.linkType
   await changeLinkType()
   linkValue.value = linkDataVal.linkValue
+  if (linkDataVal.isSettingCustomRoute) {
+    isCanSettingCustomRoute.value = true
+    isSettingCustomRoute.value = linkDataVal.isSettingCustomRoute
+    customRoute.value = linkDataVal.customRoute as string
+  }
   linkData.label = linkDataVal.label || 'home'
   linkData.linkType = linkDataVal.linkType || 'home'
   linkData.linkUrl = linkDataVal.linkUrl || '/'
@@ -85,9 +98,11 @@ async function getArticlesData() {
 async function changeLinkType() {
   linkValue.value = ''
   if (linkType.value === 'article') {
+    isCanSettingCustomRoute.value = true
     await getArticlesData()
   }
   if (linkType.value === 'category') {
+    isCanSettingCustomRoute.value = true
     await getCategoryData()
   }
   if (prevLinkType) {
@@ -98,10 +113,13 @@ async function changeLinkType() {
   linkData.linkUrl = '/'
   linkData.linkValue = '/'
   linkData.linkType = linkType.value
+  linkData.label = 'home'
+  linkData.isSettingCustomRoute = false
+  linkData.customRoute = ''
   linkData.children = []
   // emit('changeLinkType', linkData)
 }
-function changeLinkValue(v) {
+function changeLinkValue(v: any) {
   const childrenConfig = [] as LinkData[]
   if (needChildren.includes(linkType.value)) {
     const nodeRes = domRefs[linkType.value].value.getCheckedNodes()
@@ -145,6 +163,8 @@ function changeLinkValue(v) {
   }
   linkData.linkValue = v.id || ''
   linkData.linkType = linkType.value
+  linkData.isSettingCustomRoute = v.isSettingCustomRoute
+  linkData.customRoute = v.customRoute
 }
 function getLinkData() {
   if (linkType.value === 'externalLink') {
@@ -156,6 +176,12 @@ function getLinkData() {
     linkData.linkValue = '/'
     linkData.label = 'Home'
   }
+  if (isSettingCustomRoute.value) {
+    linkData.isSettingCustomRoute = isSettingCustomRoute.value
+  }
+  if (customRoute.value) {
+    linkData.customRoute = customRoute.value
+  }
   return jsonParse(linkData)
 }
 defineExpose({
@@ -165,67 +191,85 @@ defineExpose({
 </script>
 
 <template>
-  <div class="w-full flex justify-start items-center">
-    <div class="w-1/3 mr-1">
-      <ElSelect
-        v-model="linkType"
-        :loading="loading.data"
-        placeholder="请选择链接类型"
-        class="w-full"
-        @change="changeLinkType"
-      >
-        <ElOption v-for="item in linkTypes" :key="item.id" :label="item.title" :value="item.code" />
-      </ElSelect>
+  <div class="flex w-full flex-col">
+    <div class="flex w-full justify-start items-center">
+      <div class="w-1/3 mr-1">
+        <ElSelect
+          v-model="linkType"
+          :loading="loading.data"
+          placeholder="请选择链接类型"
+          class="w-full"
+          @change="changeLinkType"
+        >
+          <ElOption v-for="item in linkTypes" :key="item.id" :label="item.title" :value="item.code" />
+        </ElSelect>
+      </div>
+      <div class="w-2/3">
+        <!-- 博客分类 -->
+        <ElCascader
+          v-if="status.category"
+          ref="categoriesRef"
+          v-model="linkValue"
+          :loading="loading.data"
+          :show-all-levels="false"
+          :props="categoriesProps"
+          clearable
+          placeholder="请选择博客分类，支持搜索"
+          :options="categories.list"
+          filterable
+          class="w-full"
+          @change="changeLinkValue"
+        />
+        <!-- 文章 -->
+        <ElSelect
+          v-if="status.article"
+          v-model="linkValue"
+          filterable
+          clearable
+          remote
+          reserve-keyword
+          placeholder="请输入标题搜索"
+          :remote-method="getArticlesData"
+          :loading="loading.data"
+          class="w-full"
+        >
+          <ElOption
+            v-for="item in articles.list"
+            :key="item.id"
+            :label="item.articleName"
+            :value="item.id"
+            style="height: 60px; line-height: 60px"
+            @click="changeLinkValue(item)"
+          >
+            <span style="line-height: 60px">{{ item.articleName }}</span>
+          </ElOption>
+        </ElSelect>
+        <!-- 外部链接 -->
+        <ElInput
+          v-if="status.externalLink"
+          v-model="linkValue"
+          minlength="1"
+          maxlength="60"
+          placeholder="请输入外部链接"
+          class="w-full"
+        />
+      </div>
     </div>
 
-    <div class="w-2/3">
-      <!-- 博客分类 -->
-      <ElCascader
-        v-if="status.category"
-        ref="categoriesRef"
-        v-model="linkValue"
-        :loading="loading.data"
-        :show-all-levels="false"
-        :props="categoriesProps"
-        clearable
-        placeholder="请选择博客分类，支持搜索"
-        :options="categories.list"
-        filterable
-        class="w-full"
-        @change="changeLinkValue"
-      />
-      <!-- 文章 -->
-      <ElSelect
-        v-if="status.article"
-        v-model="linkValue"
-        filterable
-        clearable
-        remote
-        reserve-keyword
-        placeholder="请输入标题搜索"
-        :remote-method="getArticlesData"
-        :loading="loading.data"
-        class="w-full"
-      >
-        <ElOption
-          v-for="item in articles.list"
-          :key="item.id"
-          :label="item.articleName"
-          :value="item.id"
-          style="height: 60px; line-height: 60px"
-          @click.native="changeLinkValue(item)"
-        >
-          <span style="line-height: 60px">{{ item.articleName }}</span>
-        </ElOption>
-      </ElSelect>
-      <!-- 外部链接 -->
+    <!-- 自定义路由部分 -->
+    <div v-if="isCanSettingCustomRoute" class="w-full mt-4">
+      <div class="flex items-center">
+        <div>是否自定义路由：</div>
+        <ElSwitch v-model="isSettingCustomRoute" />
+      </div>
       <ElInput
-        v-if="status.externalLink"
-        v-model="linkValue"
+        v-if="isSettingCustomRoute"
+        v-model="customRoute"
         minlength="1"
         maxlength="60"
-        placeholder="请输入外部链接"
+        placeholder="请输入自定义路由"
         class="w-full"
+        clearable
       />
     </div>
   </div>

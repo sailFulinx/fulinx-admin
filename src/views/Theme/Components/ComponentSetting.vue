@@ -3,10 +3,13 @@ import { editThemeConfig, showTheme } from '@/api/theme'
 import { components } from '@/data/component'
 import { themeContents } from '@/data/theme'
 import { ElMessage } from 'element-plus'
+import { VueDraggable } from 'vue-draggable-plus'
 
 const id = Number(useRoute().params.id)
 
 const currentComponentRef = ref()
+
+const vueDraggableRef = ref()
 
 // 动态导入所有组件
 const componentModules = import.meta.glob('@/components/Theme/Components/*.vue')
@@ -231,16 +234,15 @@ getThemeData()
             </div>
           </template>
           <div v-for="(item, index) in themeContentData" :key="index">
-            <EBtn
-              :type="currentThemeContentData.themeContentCode === item.themeContentCode ? 'danger' : ''"
-              class="w-full mb-3 h-9 text-left"
+            <div
+              :class="`${currentThemeContentData.themeContentCode === item.themeContentCode ? 'bg-red-600 text-white' : 'bg-white'} w-full mb-3 text-left cursor-pointer border-1 border-gray-300 px-6 py-3`"
               @click="handleChangeThemeContent(item)"
             >
-              <span class="fl">
+              <div class="flex items-center">
                 <Icon icon="ant-design:holder-outlined" class="mr-1" />
-                {{ item.themeContentName }}
-              </span>
-            </EBtn>
+                <span>{{ item.themeContentName }}</span>
+              </div>
+            </div>
           </div>
         </ElCard>
       </div>
@@ -259,26 +261,25 @@ getThemeData()
               </div>
             </div>
           </template>
-          <Draggable :list="currentThemeContentComponentsData" item-key="sort" @start="dragging = true" @end="dragEnd">
-            <template #item="{ element, index }">
-              <div
-                class="w-full mb-3 h-9 flex justify-between items-center border-1 border-gray-300 px-6 py-6 cursor-pointer"
-              >
-                <span class="flex-grow">
-                  <Icon icon="ant-design:holder-outlined" class="mr-1" />
-                  <ElTag type="info" class="mr-1">排序：{{ element.sort }}</ElTag>
-                  <ElTag type="warning" class="mr-1">{{ element.componentName }}</ElTag>
-                  <ElTag v-if="element.aliasName" class="mr-1">{{ element.aliasName }}</ElTag>
-                  <ElTag v-if="element.componentConfig.status" type="success">启用</ElTag>
-                  <ElTag v-if="!element.componentConfig.status" type="danger">禁用</ElTag>
-                </span>
-                <span class="flex">
-                  <EBtn text @click="handleSettingComponent(element)">设置</EBtn>
-                  <EBtn text type="danger" @click="handleRemoveComponent(index)">删除</EBtn>
-                </span>
-              </div>
-            </template>
-          </Draggable>
+          <VueDraggable ref="vueDraggableRef" v-model="currentThemeContentComponentsData" item-key="sort" @start="dragging = true" @end="dragEnd">
+            <div
+              v-for="(item, index) in currentThemeContentComponentsData" :key="item.id"
+              class="w-full mb-3 h-9 flex justify-between items-center border-1 border-gray-300 px-6 py-6 cursor-pointer"
+            >
+              <span class="flex flex-grow items-center">
+                <Icon icon="ant-design:holder-outlined" class="mr-1" />
+                <ElTag type="info" class="mr-1">排序：{{ item.sort }}</ElTag>
+                <ElTag type="warning" class="mr-1">{{ item.componentName }}</ElTag>
+                <ElTag v-if="item.aliasName" class="mr-1">{{ item.aliasName }}</ElTag>
+                <ElTag v-if="item.componentConfig.status" type="success">启用</ElTag>
+                <ElTag v-if="!item.componentConfig.status" type="danger">禁用</ElTag>
+              </span>
+              <span class="flex">
+                <EBtn text @click="handleSettingComponent(item)">设置</EBtn>
+                <EBtn text type="danger" @click="handleRemoveComponent(index)">删除</EBtn>
+              </span>
+            </div>
+          </VueDraggable>
         </ElCard>
       </div>
     </div>
@@ -298,7 +299,7 @@ getThemeData()
       </template>
     </ElDialog>
 
-    <ElDialog v-model="settingComponentDialogVisible" title="设置组件">
+    <ElDialog v-model="settingComponentDialogVisible" title="设置组件" width="70%">
       <div v-if="currentComponentData.isRequiredAliasName">
         <ElForm label-width="140px">
           <ElFormItem label="组件别名" required>

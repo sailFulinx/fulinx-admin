@@ -83,6 +83,8 @@ interface LinkData {
   linkUrl: string
   linkValue: string
   label: string
+  isSettingCustomRoute?: boolean
+  customRoute?: string
   linkType: string
   children: LinkData[]
 }
@@ -93,6 +95,8 @@ interface MenuData {
   linkUrl?: string
   linkType?: string
   linkValue?: string
+  isSettingCustomRoute?: boolean
+  customRoute?: string
   link?: LinkData
   menuType?: string
   isDropDownCustom?: boolean

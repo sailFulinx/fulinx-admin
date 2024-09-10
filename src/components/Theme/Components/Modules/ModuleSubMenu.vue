@@ -19,6 +19,8 @@ const currentSubMenu = ref<MenuData>({
   linkUrl: '',
   linkType: '',
   linkValue: '',
+  isSettingCustomRoute: false,
+  customRoute: '',
 })
 const isEditMenu = ref(false)
 
@@ -52,9 +54,12 @@ function setMenuTableSort() {
         },
         onEnd: evt => {
           const subMenusData = subMenus.value
-          const oldIndex = evt.oldIndex
+          const oldIndex = evt.oldIndex as number
           const newIndex = evt.newIndex
           const temp = subMenusData[oldIndex]
+          if (!newIndex) {
+            return
+          }
           if (oldIndex < newIndex) {
             // Move down
             for (let i = oldIndex; i < newIndex; i++) {
@@ -68,9 +73,9 @@ function setMenuTableSort() {
           }
           subMenusData[newIndex] = temp
         },
-        onUpdate: () => {
-          subMenus.value = subMenus.value
-        },
+        // onUpdate: () => {
+        //   subMenus.value = subMenus.value
+        // },
       })
     }
   }
@@ -83,6 +88,8 @@ async function addSubMenu() {
     linkType: '',
     linkUrl: '',
     linkValue: '',
+    isSettingCustomRoute: false,
+    customRoute: '',
   }
   dialogVisible.value = true
   await nextTick()
@@ -106,6 +113,8 @@ async function submitSubMenu() {
   currentSubMenu.value.linkType = linkData.linkType
   currentSubMenu.value.linkUrl = linkData.linkUrl
   currentSubMenu.value.linkValue = linkData.linkValue
+  currentSubMenu.value.isSettingCustomRoute = linkData.isSettingCustomRoute
+  currentSubMenu.value.customRoute = linkData.customRoute
 
   if (isEditMenu.value) {
     subMenus.value = subMenus.value.map(item => {
@@ -114,13 +123,11 @@ async function submitSubMenu() {
   } else {
     subMenus.value.push({ ...currentSubMenu.value })
   }
-  console.log(subMenus.value)
   dialogVisible.value = false
   isEditMenu.value = false
 }
 
 function getFormData() {
-  console.log(subMenus.value)
   return subMenus.value
 }
 
