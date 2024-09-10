@@ -30,6 +30,7 @@ interface ArticleData {
   isDelete: number
   metaDescription: string
   metaTitle: string
+  isCustomLayout: boolean
   customs: string
   recordCreateName: string
   recordCreateTime: Record<string, unknown>
@@ -67,6 +68,7 @@ interface ArticleRequest {
   status: number | boolean
   tags?: string[]
   deletedTagIds?: number[]
+  isCustomLayout: boolean
   customs: string
 }
 
@@ -92,4 +94,11 @@ interface ArticleTypeData {
 interface ListArticleTypeRes {
   list: ArticleTypeData[]
   total: number
+}
+
+interface CustomDataType {
+  id: number
+  customType: string
+  customTitle: string
+  customContent: any
 }

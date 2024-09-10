@@ -8,16 +8,9 @@ const customEditorRef = ref()
 
 const uploadRef = ref()
 
-interface FormType {
-  id: number
-  customType: string
-  customTitle: string
-  customContent: any
-}
-
 const formRef = ref()
 
-const form = reactive<FormType>({
+const form = reactive<CustomDataType>({
   id: 0,
   customType: 'text',
   customTitle: '',
@@ -36,7 +29,7 @@ const getRemovedFiles = (val: number) => {
   }
 }
 
-const setFormData = async data => {
+const setFormData = async (data: CustomDataType) => {
   form.id = data.id
   form.customTitle = data.customTitle
   form.customContent = data.customContent
@@ -96,7 +89,9 @@ const saveFormData = async () => {
     }
     const data = { ...form }
     emit('getCustomData', data)
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 const cancelEdit = () => {

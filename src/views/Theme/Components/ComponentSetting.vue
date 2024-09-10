@@ -271,8 +271,7 @@ getThemeData()
                 <ElTag type="info" class="mr-1">排序：{{ item.sort }}</ElTag>
                 <ElTag type="warning" class="mr-1">{{ item.componentName }}</ElTag>
                 <ElTag v-if="item.aliasName" class="mr-1">{{ item.aliasName }}</ElTag>
-                <ElTag v-if="item.componentConfig.status" type="success">启用</ElTag>
-                <ElTag v-if="!item.componentConfig.status" type="danger">禁用</ElTag>
+                <ElTag :type="`${item.componentConfig.status ? 'success' : 'danger'}`">{{ item.componentConfig.status ? '启用' : '禁用' }}</ElTag>
               </span>
               <span class="flex">
                 <EBtn text @click="handleSettingComponent(item)">设置</EBtn>
