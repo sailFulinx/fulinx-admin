@@ -23,7 +23,7 @@ VITE_OUT_DIR=dist-pro
 VITE_APP_TITLE=FulinxCms
 
 # API URL
-VITE_API_URL=https://api.FulinxCmsclub.com/api/
+VITE_API_URL=https://api.hcd.fulinx.webplus360.com/api/
 
 # 资源URL
-VITE_RESOURCE_URL=https://image.FulinxCmsclub.com
+VITE_RESOURCE_URL=https://standalone.image.cms.fulinx.com
