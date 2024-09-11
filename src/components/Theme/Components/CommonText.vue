@@ -1,4 +1,6 @@
 <script setup name="CommonText" lang="ts">
+import { ElMessage } from 'element-plus'
+
 const props = defineProps({
   componentData: {
     type: Object as () => FormData,
@@ -7,14 +9,14 @@ const props = defineProps({
 
 interface FormData {
   content: {
-    text: string
+    text: string[]
   }
   status: boolean
 }
 
 const form = reactive<FormData>({
   content: {
-    text: '',
+    text: [''],
   },
   status: true,
 })
@@ -35,20 +37,29 @@ watch(
 
 const formRef = ref()
 
+const handleAddText = () => {
+  form.content.text.push('') // 新增一行文字内容
+  form.content.text = [...form.content.text] // 重新赋值以确保响应式更新
+}
+
+const handleRemove = (index: number) => {
+  form.content.text.splice(index, 1) // 删除指定的文字内容
+  form.content.text = [...form.content.text] // 重新赋值以确保响应式更新
+}
+
 async function getFormData() {
-  const valid = await formRef.value.validate((valid: boolean) => {
-    if (!valid) {
-      return false
-    }
-  })
-  if (!valid) {
+  if (form.content.text.length === 0) {
+    ElMessage.error('请输入文字内容')
     return false
   }
   return form
 }
 
 function setFormData(formData: FormData) {
-  form.content.text = formData.content.text
+  if (formData.content.text && Array.isArray(formData.content.text)) {
+    form.content.text = [...formData.content.text] // 确保重新赋值，触发响应式
+  }
+
   form.status = formData.status
 }
 
@@ -61,8 +72,19 @@ defineExpose({
 <template>
   <div>
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="140px">
-      <ElFormItem label="文字内容" prop="content.text">
-        <ElInput v-model="form.content.text" placeholder="请输入文字内容" />
+      <ElFormItem label="文字内容" required>
+        <div v-for="(item, index) in form.content.text" :key="index" class="w-full mb-4">
+          <div class="flex">
+            <ElInput v-model="form.content.text[index]" placeholder="请输入文字内容" />
+            <EBtn text type="danger" class="ml-5" @click="handleRemove(index)">
+              <Icon icon="ep:delete" />
+            </EBtn>
+          </div>
+        </div>
+        <EBtn @click="handleAddText">
+          <Icon icon="ep:plus" />
+          增加一行文字
+        </EBtn>
       </ElFormItem>
       <ElFormItem label="状态" required>
         <ElSwitch v-model="form.status" />
