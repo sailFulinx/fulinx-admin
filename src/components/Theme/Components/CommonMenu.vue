@@ -1,5 +1,6 @@
 <script setup name="ThemeHeaderMenu" lang="ts">
 import { menuTypes } from '@/data/theme'
+import { hasContentElements } from '@/utils'
 import { ElMessage } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
 
@@ -15,10 +16,9 @@ const formRef = ref()
 const dragging = ref(false)
 const uploadSingleRef = ref()
 
-// 当前菜单
-const currentMenu = ref<MenuData>({
-  id: 0,
-  label: '首页',
+const createMenuData = (index: number = 0): MenuData => ({
+  id: index,
+  label: `Menu ${index}`,
   link: {
     linkType: 'home',
     linkUrl: '/',
@@ -41,110 +41,85 @@ const currentMenu = ref<MenuData>({
   children: [],
 })
 
-const menus = ref<MenuData[]>([
-  {
-    id: 0,
-    label: '首页',
-    link: {
-      linkType: 'home',
-      linkUrl: '/',
-      label: '',
-      linkValue: '/',
-      children: [],
-    },
-    menuType: 'none',
-    isDropDownCustom: false,
-    image: {
-      id: 0,
-      originalFileName: '',
-      fileName: '',
-      fileContentType: '',
-      fileExtensionName: '',
-      path: '',
-      fileUrl: '',
-      sha256: '',
-    },
-    children: [],
-  },
-])
+// 当前菜单
+const currentMenu = ref<MenuData>(createMenuData())
+
+const menus = ref<MenuData[]>([])
 
 watch(
   () => props.componentData,
-  val => {
-    if (val && val.content && val.content[0]) {
+  async val => {
+    if (val && val.content && hasContentElements(val.content)) {
       menus.value = val.content
-      // currentMenu.value = menus.value[0]
+      await nextTick(() => {
+        currentMenu.value = menus.value[0]
+        moduleLinkRef.value.setLinkData(currentMenu.value.link)
+      })
     }
   },
   { immediate: true, deep: true },
 )
 
 onMounted(() => {
-  moduleLinkRef.value.setLinkData(currentMenu.value.link)
+  if (moduleLinkRef.value) {
+    moduleLinkRef.value.setLinkData(currentMenu.value.link)
+  }
 })
 
-function sortMenuId() {
-  menus.value.forEach((item, index) => {
-    item.id = index
-  })
-}
-
-function changeLinkType(val: { linkType: string, linkUrl: string, linkValue: string }) {
+/**
+ * 更改链接类型
+ */
+function changeLinkType(val: LinkData) {
   if (!currentMenu.value.link) {
     return
   }
-  currentMenu.value.link.linkType = val.linkType
-  currentMenu.value.link.linkUrl = val.linkUrl
-  currentMenu.value.link.linkValue = val.linkValue
+  currentMenu.value.link = { ...val }
 }
 
-async function changeMenu(index: number) {
+/**
+ * 更改当前菜单
+ */
+async function changeCurrentMenu(index: number) {
   const selectMenu = menus.value[index]
   await saveMenuData()
   currentMenu.value = selectMenu
   moduleLinkRef.value.setLinkData(selectMenu.link)
 }
 
+/**
+ * 增加菜单
+ */
 async function addMenu() {
+  const maxMenus = 50
   const menusLength = menus.value.length
-  if (menusLength >= 50) {
-    ElMessage.error('菜单最多不超过50个')
+  if (menusLength >= maxMenus) {
+    ElMessage.error(`菜单最多不超过 ${maxMenus} 个`)
     return
   }
-  await saveMenuData()
-  const newMenu: MenuData = {
-    label: `Menu ${menusLength}`,
-    id: menusLength,
-    link: {
-      linkType: 'home',
-      linkUrl: '/',
-      label: '',
-      linkValue: '/',
-      children: [],
-    },
-    menuType: 'none',
-    isDropDownCustom: false,
-    image: {
-      id: 0,
-      originalFileName: '',
-      fileName: '',
-      fileContentType: '',
-      fileExtensionName: '',
-      path: '',
-      fileUrl: '',
-      sha256: '',
-    },
-    children: [],
-  }
+  await saveMenuData() // 保存当前菜单数据
+  const newMenu = createMenuData(menusLength)
   menus.value.push(newMenu)
   nextTick(() => {
-    currentMenu.value = newMenu
+    currentMenu.value = newMenu // 设置当前选中的菜单
+    moduleLinkRef.value.setLinkData(newMenu.link) // 更新链接数据
   })
-  moduleLinkRef.value.setLinkData(newMenu.link)
+}
+
+/**
+ * 移除菜单
+ */
+function removeMenu(val: number) {
+  menus.value.splice(val, 1)
+  currentMenu.value = menus.value[0]
+  handleChangeMenuSort()
 }
 
 // 保存菜单数据
 async function saveMenuData() {
+  if (!currentMenu.value.id || !currentMenu.value.label) {
+    // ElMessage.error('请填写菜单名称')
+    return
+  }
   const linkData = await moduleLinkRef.value.getLinkData()
   currentMenu.value.link = { ...linkData }
   if (currentMenu.value.isDropDownCustom) {
@@ -158,18 +133,28 @@ async function saveMenuData() {
   menus.value[currentMenu.value.id] = currentMenu.value
 }
 
-function removeMenu(val: number) {
-  menus.value.splice(val, 1)
-  currentMenu.value = menus.value[0]
-  sortMenuId()
+/**
+ * 改变菜单排序
+ */
+function handleChangeMenuSort() {
+  menus.value.forEach((item, index) => {
+    item.id = index
+  })
 }
 
+/**
+ * 拖动结束事件
+ */
 function dragEnd() {
-  sortMenuId()
+  handleChangeMenuSort()
 }
 
+/**
+ * 获取表单数据
+ */
 async function getFormData() {
   await saveMenuData()
+  console.log(menus.value)
   const form = {
     content: menus.value,
     status: true,
@@ -185,7 +170,7 @@ defineExpose({
 <template>
   <div>
     <div class="flex px-3 py-3">
-      <div class="w-1/3 pr-2">
+      <div class="w-1/4 pr-2">
         <div class="border border-gray-200 px-3 py-3">
           <VueDraggable v-model="menus" item-key="id" @start="dragging = true" @end="dragEnd">
             <div v-for="(item, index) in menus" :key="item.id" class="w-full mb-3">
@@ -194,7 +179,7 @@ defineExpose({
                 :class="[
                   item.id === currentMenu.id ? 'bg-blue-400 text-white' : 'bg-white text-black hover:bg-gray-100',
                 ]"
-                @click="changeMenu(index)"
+                @click="changeCurrentMenu(index)"
               >
                 <div class="flex items-center space-x-2">
                   <span><Icon icon="ant-design:holder-outlined" /></span>
@@ -212,12 +197,12 @@ defineExpose({
           </ElButton>
         </div>
       </div>
-      <div class="w-2/3 pl-2">
+      <div v-if="menus && menus.length > 0" class="w-3/4 pl-2">
         <ElCard shadow="never">
           <template #header>
             <span>{{ currentMenu.label }}</span>
           </template>
-          <ElForm ref="formRef" label-width="120px">
+          <ElForm ref="formRef" label-width="160px">
             <ElFormItem label="菜单名称" required>
               <ElInput
                 v-model="currentMenu.label"
@@ -244,7 +229,7 @@ defineExpose({
             </ElFormItem>
             <!-- 下拉菜单 -->
             <div v-if="currentMenu.menuType === 'dropDown'">
-              <ElFormItem v-if="currentMenu.link?.linkType === 'category'" label="是否自定义" required>
+              <ElFormItem v-if="currentMenu.link?.linkType === 'category'" label="是否自定义下拉菜单" required>
                 <ElSwitch v-model="currentMenu.isDropDownCustom" />
               </ElFormItem>
               <ElFormItem

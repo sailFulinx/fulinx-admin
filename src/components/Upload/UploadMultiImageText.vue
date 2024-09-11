@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { uploadFileApi } from '@/api/file'
 import { Delete, Plus } from '@element-plus/icons-vue'
-import { ElIcon, ElImage, ElMessage, ElUpload, type UploadFile, type UploadProps } from 'element-plus'
-import type { UploadFiles } from 'element-plus'
+import { ElIcon, ElImage, ElMessage, ElUpload, type UploadFile, type UploadFiles, type UploadProps } from 'element-plus'
 
 const emit = defineEmits(['removeFile'])
 
@@ -125,18 +124,18 @@ defineExpose({ getFileData, setFileData })
       <div class="w-full flex justify-between items-center mt-2">
         <div class="flex">
           <ElIcon class="mb-2 cursor-pointer" color="#409eff" @click="handleEdit(index)">
-            <Edit />
+            <Icon icon="ep:edit-pen" />
           </ElIcon>
           <ElIcon class="mb-2 ml-2 cursor-pointer" color="#f56c6c" @click="handleRemove(index)">
-            <Delete />
+            <Icon icon="ep:delete" />
           </ElIcon>
         </div>
         <div>
           <ElIcon v-if="index !== 0" class="mb-2 cursor-pointer" @click="handleLeft(index)">
-            <ArrowLeft />
+            <Icon icon="ep:arrow-left" />
           </ElIcon>
           <ElIcon v-if="index !== fileDataList.length - 1" class="mb-2 cursor-pointer" @click="handleRight(index)">
-            <ArrowRight />
+            <Icon icon="ep:arrow-right" />
           </ElIcon>
         </div>
       </div>

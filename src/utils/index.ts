@@ -134,3 +134,34 @@ export function getCurrentFormattedDate(): string {
   const formattedDate = `${year}-${month}-${day}`
   return formattedDate
 }
+
+export function hasContentElements(content: Record<string, any>): boolean {
+  return Object.values(content).some(value => {
+    if (Array.isArray(value)) {
+      // 检查数组是否非空
+      return value.length > 0
+    } else if (typeof value === 'string') {
+      // 检查字符串是否非空
+      return value.trim().length > 0
+    } else if (typeof value === 'object' && value !== null) {
+      if (value instanceof Date) {
+        // 检查 Date 是否有效
+        return !isNaN(value.getTime())
+      } else if (value instanceof Set || value instanceof Map) {
+        // 检查 Set 或 Map 是否非空
+        return value.size > 0
+      } else {
+        // 检查普通对象是否有属性
+        return Object.keys(value).length > 0
+      }
+    } else if (typeof value === 'number') {
+      // 检查数字是否非零
+      return value !== 0
+    } else if (typeof value === 'boolean') {
+      // 布尔值，true 代表有效内容
+      return value === true
+    }
+    // 处理其他可能的类型，如 undefined、null 等
+    return !!value
+  })
+}

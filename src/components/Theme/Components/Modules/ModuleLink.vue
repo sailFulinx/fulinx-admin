@@ -3,7 +3,7 @@ import { articleList } from '@/api/article'
 import { listCategoryApi } from '@/api/category'
 import { linkTypes } from '@/data/theme'
 
-defineEmits(['changeLinkType'])
+const emit = defineEmits(['changeLinkType'])
 const linkType = ref<string>('home')
 const linkValue = ref<string>('')
 const isCanSettingCustomRoute = ref<boolean>(false)
@@ -52,8 +52,11 @@ const domRefs = {
 }
 
 const setLinkData = async (linkDataVal: LinkData) => {
+  isCanSettingCustomRoute.value = false
+  isSettingCustomRoute.value = false
+  customRoute.value = ''
   linkType.value = linkDataVal.linkType
-  await changeLinkType()
+  await getLinkRemoteData()
   linkValue.value = linkDataVal.linkValue
   if (linkDataVal.isSettingCustomRoute) {
     isCanSettingCustomRoute.value = true
@@ -84,6 +87,9 @@ async function getCategoryData() {
  * @param query
  */
 async function getArticlesData() {
+  if (linkValue.value === '/') {
+    return
+  }
   const payload = {
     articleId: linkValue.value || null,
   }
@@ -95,7 +101,8 @@ async function getArticlesData() {
   articles.value = data
   loading.data = false
 }
-async function changeLinkType() {
+
+async function getLinkRemoteData() {
   linkValue.value = ''
   if (linkType.value === 'article') {
     isCanSettingCustomRoute.value = true
@@ -117,7 +124,12 @@ async function changeLinkType() {
   linkData.isSettingCustomRoute = false
   linkData.customRoute = ''
   linkData.children = []
-  // emit('changeLinkType', linkData)
+}
+
+async function changeLinkType() {
+  await getLinkRemoteData()
+  // 更改上级菜单链接类型
+  emit('changeLinkType', linkData)
 }
 function changeLinkValue(v: any) {
   const childrenConfig = [] as LinkData[]

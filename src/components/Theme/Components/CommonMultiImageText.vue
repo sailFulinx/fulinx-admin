@@ -1,4 +1,5 @@
 <script setup name="CommonImageText" lang="ts">
+import { hasContentElements } from '@/utils'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({
@@ -6,6 +7,8 @@ const props = defineProps({
     type: Object as () => FormData,
   },
 })
+
+const formRef = ref()
 
 interface MultiImageTextItem {
   id: number
@@ -26,12 +29,15 @@ interface FormData {
   }
   status: boolean
 }
-let form = reactive<FormData>({
-  content: {
-    imageTextList: [],
-  },
-  status: true,
-})
+const createForm = (): FormData => {
+  return {
+    content: {
+      imageTextList: [],
+    },
+    status: true,
+  }
+}
+let form = reactive<FormData>(createForm())
 watch(
   () => props.componentData,
   val => {
@@ -61,10 +67,16 @@ async function getFormData() {
   return form
 }
 
-async function setFormData(formData) {
+async function setFormData(formData: FormData) {
   await nextTick()
-  uploadRef.value.setFileData(formData.content.imageTextList)
-  form = formData
+  if (hasContentElements(formData.content)) {
+    if (formData.content.imageTextList && Array.isArray(formData.content.imageTextList)) {
+      uploadRef.value.setFileData(formData.content.imageTextList)
+    }
+    form = { ...formData }
+  } else {
+    form = reactive({ ...createForm() })
+  }
 }
 
 defineExpose({

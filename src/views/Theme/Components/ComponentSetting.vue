@@ -67,6 +67,7 @@ const currentThemeContentComponentsData = ref<ComponentData[]>([])
 const aliasName = ref<string>('')
 // 设置组件
 const handleSettingComponent = async (item: ComponentData) => {
+  aliasName.value = ''
   if (!item.isRequiredAliasName) {
     item.isRequiredAliasName = true
     item.aliasName = item.componentName
@@ -263,7 +264,7 @@ getThemeData()
           </template>
           <VueDraggable ref="vueDraggableRef" v-model="currentThemeContentComponentsData" item-key="sort" @start="dragging = true" @end="dragEnd">
             <div
-              v-for="(item, index) in currentThemeContentComponentsData" :key="item.id"
+              v-for="(item, index) in currentThemeContentComponentsData" :key="index"
               class="w-full mb-3 h-9 flex justify-between items-center border-1 border-gray-300 px-6 py-6 cursor-pointer"
             >
               <span class="flex flex-grow items-center">

@@ -73,7 +73,7 @@ const getFileData = () => {
 }
 
 const setFileData = (fileList: FileData[]) => {
-  if (fileList.length === 0) {
+  if (fileList && fileList.length === 0) {
     return
   }
   fileDataList.value = fileList

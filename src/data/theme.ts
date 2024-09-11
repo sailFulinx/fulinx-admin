@@ -17,12 +17,12 @@ export const themeContents: ThemeContentDataType[] = [
     themeContentName: '首页',
     components: [],
   },
-  {
-    id: 4,
-    themeContentCode: 'PageContactUs',
-    themeContentName: '联系我们',
-    components: [],
-  },
+  // {
+  //   id: 4,
+  //   themeContentCode: 'PageContactUs',
+  //   themeContentName: '联系我们',
+  //   components: [],
+  // },
 ]
 
 export const menuTypes = [
