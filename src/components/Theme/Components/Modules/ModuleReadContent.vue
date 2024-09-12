@@ -101,7 +101,6 @@ const setReadContentData = async readContentDataVal => {
 }
 
 function getReadContentData() {
-  console.log(readContentData)
   return jsonParse(readContentData)
 }
 defineExpose({

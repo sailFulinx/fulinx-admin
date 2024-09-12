@@ -1,19 +1,21 @@
 <script setup name="ThemeSubMenu" lang="ts">
+import { hasContentElements } from '@/utils'
+import { ElMessage } from 'element-plus'
 import Sortable from 'sortablejs'
 
 const props = defineProps<{
-  componentData: MenuData[]
+  componentData: LinkData[]
 }>()
 
 let id = 1
 
 const moduleSubMenuFormRef = ref()
-const subMenus = ref<MenuData[]>([])
+const subMenus = ref<LinkData[]>([])
 const sortable = ref<Sortable | null>(null)
 const dialogVisible = ref(false)
 const subMenuTableRef = ref()
 const themeLinkRef = ref()
-const currentSubMenu = ref<MenuData>({
+const currentSubMenu = ref<LinkData>({
   id: 0,
   label: '',
   linkUrl: '',
@@ -21,6 +23,7 @@ const currentSubMenu = ref<MenuData>({
   linkValue: '',
   isSettingCustomRoute: false,
   customRoute: '',
+  children: [],
 })
 const isEditMenu = ref(false)
 
@@ -90,13 +93,14 @@ async function addSubMenu() {
     linkValue: '',
     isSettingCustomRoute: false,
     customRoute: '',
+    children: [],
   }
   dialogVisible.value = true
   await nextTick()
   themeLinkRef.value.setLinkData(currentSubMenu.value)
 }
 
-async function editMenu(val: MenuData) {
+async function editMenu(val: LinkData) {
   dialogVisible.value = true
   isEditMenu.value = true
   currentSubMenu.value = val
@@ -104,12 +108,20 @@ async function editMenu(val: MenuData) {
   themeLinkRef.value.setLinkData(currentSubMenu.value)
 }
 
-function removeMenu(val: MenuData) {
+function removeMenu(val: LinkData) {
   subMenus.value = subMenus.value.filter(item => item.id !== val.id)
 }
 
 async function submitSubMenu() {
+  if (!currentSubMenu.value.label) {
+    ElMessage.error('请填写菜单名称')
+    return
+  }
   const linkData = await themeLinkRef.value.getLinkData()
+  if (!linkData || !hasContentElements(linkData)) {
+    ElMessage.error('请填写链接信息')
+    return
+  }
   currentSubMenu.value.linkType = linkData.linkType
   currentSubMenu.value.linkUrl = linkData.linkUrl
   currentSubMenu.value.linkValue = linkData.linkValue

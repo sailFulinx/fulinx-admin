@@ -21,6 +21,7 @@ const linkData = reactive<LinkData>({
   label: '',
   children: [],
 })
+
 const categoriesProps = reactive({
   value: 'id',
   label: 'categoryName',
@@ -66,7 +67,7 @@ const setLinkData = async (linkDataVal: LinkData) => {
   linkData.label = linkDataVal.label || 'home'
   linkData.linkType = linkDataVal.linkType || 'home'
   linkData.linkUrl = linkDataVal.linkUrl || '/'
-  linkData.linkValue = linkDataVal.linkValue || '/'
+  linkData.linkValue = linkDataVal.linkValue || ''
   linkData.children = linkDataVal.children || []
 }
 
@@ -82,6 +83,11 @@ async function getCategoryData() {
   loading.data = false
 }
 
+const articlePayload = reactive<ArticleListParams>({
+  articleId: null,
+  articleName: null,
+})
+
 /**
  * 获取文章数据
  * @param query
@@ -90,11 +96,9 @@ async function getArticlesData() {
   if (linkValue.value === '/') {
     return
   }
-  const payload = {
-    articleId: linkValue.value || null,
-  }
+  articlePayload.articleId = linkValue.value || null
   loading.data = true
-  const { data } = await articleList(payload).catch(err => {
+  const { data } = await articleList(articlePayload).catch(err => {
     loading.data = false
     throw err
   })
@@ -102,10 +106,19 @@ async function getArticlesData() {
   loading.data = false
 }
 
+const queryArticlesData = (query: string) => {
+  if (!query || query === '/' || query.length < 2) {
+    return
+  }
+  articlePayload.articleName = query
+  getArticlesData()
+}
+
 async function getLinkRemoteData() {
   linkValue.value = ''
   if (linkType.value === 'article') {
     isCanSettingCustomRoute.value = true
+    articlePayload.articleName = null
     await getArticlesData()
   }
   if (linkType.value === 'category') {
@@ -118,7 +131,7 @@ async function getLinkRemoteData() {
   status[linkType.value] = true
   prevLinkType = linkType.value
   linkData.linkUrl = '/'
-  linkData.linkValue = '/'
+  linkData.linkValue = ''
   linkData.linkType = linkType.value
   linkData.label = 'home'
   linkData.isSettingCustomRoute = false
@@ -181,7 +194,7 @@ function changeLinkValue(v: any) {
 function getLinkData() {
   if (linkType.value === 'externalLink') {
     linkData.linkUrl = linkValue.value || '/'
-    linkData.linkValue = linkValue.value || '/'
+    linkData.linkValue = linkValue.value || ''
   }
   if (linkType.value === 'home') {
     linkData.linkUrl = '/'
@@ -194,6 +207,7 @@ function getLinkData() {
   if (customRoute.value) {
     linkData.customRoute = customRoute.value
   }
+  console.log(linkData)
   return jsonParse(linkData)
 }
 defineExpose({
@@ -241,7 +255,7 @@ defineExpose({
           remote
           reserve-keyword
           placeholder="请输入标题搜索"
-          :remote-method="getArticlesData"
+          :remote-method="queryArticlesData"
           :loading="loading.data"
           class="w-full"
         >

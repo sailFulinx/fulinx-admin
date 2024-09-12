@@ -80,6 +80,7 @@ interface ThemeRemoveRequest {
 }
 
 interface LinkData {
+  id?: number
   linkUrl: string
   linkValue: string
   label: string
@@ -92,16 +93,16 @@ interface LinkData {
 interface MenuData {
   id: number
   label: string
-  linkUrl?: string
-  linkType?: string
-  linkValue?: string
-  isSettingCustomRoute?: boolean
-  customRoute?: string
+  // linkUrl?: string
+  // linkType?: string
+  // linkValue?: string
+  // isSettingCustomRoute?: boolean
+  // customRoute?: string
   link?: LinkData
   menuType?: string
   isDropDownCustom?: boolean
   image?: FileData
-  children?: MenuData[]
+  children?: LinkData[]
 }
 
 interface ComponentConfig {
