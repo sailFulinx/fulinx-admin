@@ -207,7 +207,6 @@ function getLinkData() {
   if (customRoute.value) {
     linkData.customRoute = customRoute.value
   }
-  console.log(linkData)
   return jsonParse(linkData)
 }
 defineExpose({

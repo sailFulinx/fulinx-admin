@@ -2,7 +2,9 @@
 import { editThemeConfig, showTheme } from '@/api/theme'
 import { components } from '@/data/component'
 import { themeContents } from '@/data/theme'
-import { ElMessage } from 'element-plus'
+import { copyToClipboard } from '@/utils'
+import { InfoFilled } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox, ElPopconfirm } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
 
 const id = Number(useRoute().params.id)
@@ -19,6 +21,9 @@ const addComponentDialogVisible = ref<boolean>(false)
 
 // 设置组件Dialog是否显示
 const settingComponentDialogVisible = ref<boolean>(false)
+
+// 设置粘贴组件是否显示
+const pasteComponentDialogVisible = ref<boolean>(false)
 
 // 组件选择的数据
 const selectComponentData = ref<ComponentData>({
@@ -104,6 +109,36 @@ function dragEnd() {
 // 添加组件
 const handleAddComponent = () => {
   addComponentDialogVisible.value = true
+}
+
+// 复制组件数据
+const handleCopyComponent = (val: ComponentData) => {
+  copyToClipboard(JSON.stringify(val.componentConfig))
+  ElMessage.success('数据已复制到剪切板')
+}
+
+const pasteComponentData = ref<string>('')
+
+const handleOpenPasteComponentDialog = () => {
+  pasteComponentData.value = ''
+  pasteComponentDialogVisible.value = true
+}
+
+// 粘贴组件
+const handlePasteComponent = () => {
+  ElMessageBox.confirm(
+    '确定要替换当前组件数据吗?',
+    '危险操作',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'error',
+    },
+  )
+    .then(() => {
+      currentComponentData.value.componentConfig = JSON.parse(pasteComponentData.value)
+      pasteComponentDialogVisible.value = false
+    })
 }
 
 // 保存当前主题内容数据
@@ -227,7 +262,7 @@ getThemeData()
       </ElRow>
     </div>
     <div class="flex px-2 py-2 h-screen">
-      <div class="w-1/4 mr-1 px-2 py-2">
+      <div class="w-1/4 px-2 py-2">
         <ElCard shadow="never" class="h-screen">
           <template #header>
             <div class="card-header">
@@ -275,6 +310,7 @@ getThemeData()
                 <ElTag :type="`${item.componentConfig.status ? 'success' : 'danger'}`">{{ item.componentConfig.status ? '启用' : '禁用' }}</ElTag>
               </span>
               <span class="flex">
+                <EBtn text type="warning" @click="handleCopyComponent(item)">复制</EBtn>
                 <EBtn text @click="handleSettingComponent(item)">设置</EBtn>
                 <EBtn text type="danger" @click="handleRemoveComponent(index)">删除</EBtn>
               </span>
@@ -283,6 +319,7 @@ getThemeData()
         </ElCard>
       </div>
     </div>
+
     <ElDialog v-model="addComponentDialogVisible" title="添加组件">
       <ElSelect v-model="selectComponentData" value-key="id" placeholder="请选择">
         <ElOption v-for="item in components" :key="item.id" :label="item.componentName" :value="item" />
@@ -299,7 +336,17 @@ getThemeData()
       </template>
     </ElDialog>
 
-    <ElDialog v-model="settingComponentDialogVisible" title="设置组件" width="70%">
+    <ElDialog v-model="settingComponentDialogVisible" width="70%">
+      <template #header>
+        <div class="flex justify-between items-center">
+          <div>设置组件</div>
+          <div>
+            <EBtn plain type="danger" @click="handleOpenPasteComponentDialog">
+              <Icon icon="ep:copy-document" class="pr-1" />粘贴
+            </EBtn>
+          </div>
+        </div>
+      </template>
       <div v-if="currentComponentData.isRequiredAliasName">
         <ElForm label-width="140px">
           <ElFormItem label="组件别名" required>
@@ -320,6 +367,32 @@ getThemeData()
             取消
           </EBtn>
           <EBtn type="primary" @click="handleSaveCurrentComponentData">
+            提交
+          </EBtn>
+        </div>
+      </template>
+    </ElDialog>
+
+    <ElDialog v-model="pasteComponentDialogVisible">
+      <template #header>
+        <div class="flex justify-between items-center">
+          <div>粘贴组件数据</div>
+          <div class="text-red-500">
+            粘贴后会覆盖已有的组件数据，请谨慎操作
+          </div>
+        </div>
+      </template>
+      <ElForm label-width="140px">
+        <ElFormItem label="粘贴内容">
+          <ElInput v-model="pasteComponentData" type="textarea" rows="5" placeholder="请输入粘贴内容" />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <div class="dialog-footer">
+          <EBtn @click="pasteComponentDialogVisible = false">
+            取消
+          </EBtn>
+          <EBtn type="primary" @click="handlePasteComponent">
             提交
           </EBtn>
         </div>

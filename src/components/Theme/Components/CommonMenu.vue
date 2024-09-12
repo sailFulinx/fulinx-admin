@@ -169,90 +169,88 @@ defineExpose({
 </script>
 
 <template>
-  <div>
-    <div class="flex px-3 py-3">
-      <div class="w-1/4 pr-2">
-        <div class="border border-gray-200 px-3 py-3">
-          <VueDraggable v-model="menus" item-key="id" @start="dragging = true" @end="dragEnd">
-            <div v-for="(item, index) in menus" :key="index" class="w-full mb-3">
-              <div
-                class="w-full flex items-center justify-between px-4 py-3 rounded border cursor-pointer transition duration-200"
-                :class="[
-                  item.id === currentMenu?.id ? 'bg-blue-400 text-white' : 'bg-white text-black hover:bg-gray-100',
-                ]"
-                @click="changeCurrentMenu(index)"
-              >
-                <div class="flex items-center space-x-2">
-                  <span><Icon icon="ant-design:holder-outlined" /></span>
-                  <span>{{ item.label }}</span>
-                </div>
-                <div v-if="index > 0" class="flex items-center" @click.stop="removeMenu(index)">
-                  <Icon icon="ant-design:close-outlined" />
-                </div>
+  <div class="flex px-3 py-3">
+    <div class="w-1/4 pr-2">
+      <div class="border border-gray-200 px-3 py-3">
+        <VueDraggable v-model="menus" item-key="id" @start="dragging = true" @end="dragEnd">
+          <div v-for="(item, index) in menus" :key="index" class="w-full mb-3">
+            <div
+              class="w-full flex items-center justify-between px-4 py-3 rounded border cursor-pointer transition duration-200"
+              :class="[
+                item.id === currentMenu?.id ? 'bg-blue-400 text-white' : 'bg-white text-black hover:bg-gray-100',
+              ]"
+              @click="changeCurrentMenu(index)"
+            >
+              <div class="flex items-center space-x-2">
+                <span><Icon icon="ant-design:holder-outlined" /></span>
+                <span>{{ item.label }}</span>
+              </div>
+              <div class="flex items-center" @click.stop="removeMenu(index)">
+                <Icon icon="ant-design:close-outlined" />
               </div>
             </div>
-          </VueDraggable>
+          </div>
+        </VueDraggable>
 
-          <ElButton icon="el-icon-plus" class="w-full" @click="addMenu">
-            新增一级菜单
-          </ElButton>
-        </div>
+        <ElButton icon="el-icon-plus" class="w-full" @click="addMenu">
+          新增一级菜单
+        </ElButton>
       </div>
-      <div v-if="currentMenu" class="w-3/4 pl-2">
-        <ElCard shadow="never">
-          <template #header>
-            <span>{{ currentMenu?.label }}</span>
-          </template>
-          <ElForm ref="formRef" label-width="160px">
-            <ElFormItem label="菜单名称" required>
-              <ElInput
-                v-model="currentMenu.label"
-                class="input-line"
-                minlength="1"
-                maxlength="60"
-                placeholder="菜单名称"
-              />
-            </ElFormItem>
-            <ElFormItem label="链接" required>
-              <ModuleLink ref="moduleLinkRef" :link-data="currentMenu?.link" @change-link-type="changeLinkType" />
-            </ElFormItem>
-            <ElFormItem label="菜单类型" required>
-              <ElRadioGroup v-model="currentMenu.menuType">
-                <ElRadioButton
-                  v-for="(menuType, index) in menuTypes"
-                  :key="index"
-                  :value="menuType.code"
-                  :label="menuType.code"
-                >
-                  {{ menuType.title }}
-                </ElRadioButton>
-              </ElRadioGroup>
-            </ElFormItem>
-            <!-- 下拉菜单 -->
-            <div v-if="currentMenu?.menuType === 'dropDown'">
-              <ElFormItem v-if="currentMenu.link?.linkType === 'category'" label="是否自定义下拉菜单" required>
-                <ElSwitch v-model="currentMenu.isDropDownCustom" />
-              </ElFormItem>
-              <ElFormItem
-                v-if="currentMenu.isDropDownCustom || currentMenu.link?.linkType !== 'category'"
-                label="下拉菜单"
-                required
+    </div>
+    <div v-if="currentMenu" class="w-3/4 pl-2">
+      <ElCard shadow="never">
+        <template #header>
+          <span>{{ currentMenu?.label }}</span>
+        </template>
+        <ElForm ref="formRef" label-width="160px">
+          <ElFormItem label="菜单名称" required>
+            <ElInput
+              v-model="currentMenu.label"
+              class="input-line"
+              minlength="1"
+              maxlength="60"
+              placeholder="菜单名称"
+            />
+          </ElFormItem>
+          <ElFormItem label="链接" required>
+            <ModuleLink ref="moduleLinkRef" :link-data="currentMenu?.link" @change-link-type="changeLinkType" />
+          </ElFormItem>
+          <ElFormItem label="菜单类型" required>
+            <ElRadioGroup v-model="currentMenu.menuType">
+              <ElRadioButton
+                v-for="(menuType, index) in menuTypes"
+                :key="index"
+                :value="menuType.code"
+                :label="menuType.code"
               >
-                <ModuleSubMenu ref="themeSubMenuRef" :component-data="currentMenu.children || []" />
-              </ElFormItem>
+                {{ menuType.title }}
+              </ElRadioButton>
+            </ElRadioGroup>
+          </ElFormItem>
+          <!-- 下拉菜单 -->
+          <div v-if="currentMenu?.menuType === 'dropDown'">
+            <ElFormItem v-if="currentMenu.link?.linkType === 'category'" label="是否自定义下拉菜单" required>
+              <ElSwitch v-model="currentMenu.isDropDownCustom" />
+            </ElFormItem>
+            <ElFormItem
+              v-if="currentMenu.isDropDownCustom || currentMenu.link?.linkType !== 'category'"
+              label="下拉菜单"
+              required
+            >
+              <ModuleSubMenu ref="themeSubMenuRef" :component-data="currentMenu.children || []" />
+            </ElFormItem>
+          </div>
+          <!-- 超级菜单 -->
+          <ElFormItem v-if="currentMenu?.menuType === 'megaMenu'" label="子级菜单" required>
+            <div style="width: 100%">
+              <ModuleSubMenu ref="themeSubMenuRef" :component-data="currentMenu.children || []" />
             </div>
-            <!-- 超级菜单 -->
-            <ElFormItem v-if="currentMenu?.menuType === 'megaMenu'" label="子级菜单" required>
-              <div style="width: 100%">
-                <ModuleSubMenu ref="themeSubMenuRef" :component-data="currentMenu.children || []" />
-              </div>
-            </ElFormItem>
-            <ElFormItem label="图片" required>
-              <UploadSingleImage ref="uploadSingleRef" :image-data="currentMenu?.image" />
-            </ElFormItem>
-          </ElForm>
-        </ElCard>
-      </div>
+          </ElFormItem>
+          <ElFormItem label="图片" required>
+            <UploadSingleImage ref="uploadSingleRef" :image-data="currentMenu?.image" />
+          </ElFormItem>
+        </ElForm>
+      </ElCard>
     </div>
   </div>
 </template>

@@ -165,3 +165,21 @@ export function hasContentElements(content: Record<string, any>): boolean {
     return !!value
   })
 }
+
+export function copyToClipboard(text: string) {
+  // 创建一个临时的 textarea 元素
+  const textarea = document.createElement('textarea')
+  textarea.value = text
+
+  // 将 textarea 添加到 DOM 中
+  document.body.appendChild(textarea)
+
+  // 选中 textarea 中的文本
+  textarea.select()
+
+  // 执行复制操作
+  document.execCommand('copy')
+
+  // 移除 textarea 元素
+  document.body.removeChild(textarea)
+}
