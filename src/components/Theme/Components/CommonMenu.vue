@@ -140,7 +140,7 @@ async function saveMenuData() {
  */
 function handleChangeMenuSort() {
   menus.value.forEach((item, index) => {
-    item.id = index
+    item.id = index + 1
   })
 }
 

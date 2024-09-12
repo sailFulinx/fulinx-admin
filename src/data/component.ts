@@ -129,4 +129,17 @@ export const components: ComponentData[] = [
     frontComponentIdentifyCode: '',
     aliasName: '内容读取',
   },
+  {
+    id: 11,
+    backendComponentCode: 'CommonMultiText',
+    isRequiredAliasName: true,
+    componentName: '多文字',
+    componentConfig: {
+      content: {},
+      status: true,
+    },
+    sort: 0,
+    frontComponentIdentifyCode: '',
+    aliasName: '多文字',
+  },
 ]
