@@ -90,16 +90,16 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
       icon: 'ant-design:appstore-outlined',
     },
     children: [
-      // {
-      //   path: 'list',
-      //   component: () => import('@/views/Category/index.vue'),
-      //   name: 'CategoryList',
-      //   meta: {
-      //     title: $t('router.category'),
-      //     icon: 'ant-design:appstore-outlined',
-      //     noCache: true,
-      //   },
-      // },
+      {
+        path: 'list1',
+        component: () => import('@/views/Category/index.vue'),
+        name: 'CategoryList1',
+        meta: {
+          title: $t('router.category'),
+          icon: 'ant-design:appstore-outlined',
+          noCache: true,
+        },
+      },
       {
         path: 'list',
         component: () => import('@/views/Category/List.vue'),

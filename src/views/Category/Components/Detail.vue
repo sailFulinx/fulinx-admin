@@ -236,6 +236,7 @@ const handleSave = async () => {
   if (!valid) {
     return false
   }
+  console.log(uploadRef.value)
   const categoryFileVo = uploadRef.value.getFileData()
   form.categoryFileId = categoryFileVo.fileData.id
   if (props.isEdit) {
