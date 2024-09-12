@@ -54,6 +54,7 @@ const handleUpload = async ({ file }) => {
   const formData = new FormData()
   formData.append('file', file)
   const res = await processUpload(formData)
+  console.log(fileDataList.value)
   if (res) {
     fileDataList.value.push(res)
   }

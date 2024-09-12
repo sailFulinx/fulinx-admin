@@ -68,7 +68,6 @@ const handleSuccess = (response: any, uploadFile: UploadFile, uploadFiles: Uploa
 }
 
 const handleProgress = (event: { percent: number }, uploadFile: UploadFile) => {
-  console.log(88888)
   uploadProgress.value[uploadFile.uid] = event.percent
 }
 
@@ -120,6 +119,9 @@ defineExpose({ getFileData, setFileData })
         <div v-if="item.uid && uploadProgress[item.uid]" class="progress-bar">
           <div class="progress-bar-inner" :style="{ width: `${uploadProgress[item.uid]}%` }" />
         </div>
+      </div>
+      <div class="w-full flex justify-between items-center mt-2">
+        {{ item.title }}
       </div>
       <div class="w-full flex justify-between items-center mt-2">
         <div class="flex">

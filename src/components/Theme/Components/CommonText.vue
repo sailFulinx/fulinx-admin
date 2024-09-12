@@ -25,15 +25,12 @@ const rules = reactive({
   'content.text': [{ required: true, type: 'string', message: '请输入文字内容', trigger: 'blur' }],
 })
 
-watch(
-  () => props.componentData,
-  val => {
-    if (val) {
-      setFormData(val)
-    }
-  },
-  { immediate: true },
-)
+onMounted(() => {
+  if (!props.componentData) {
+    return
+  }
+  setFormData(props.componentData)
+})
 
 const formRef = ref()
 

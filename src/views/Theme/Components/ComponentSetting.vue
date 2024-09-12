@@ -48,20 +48,24 @@ const currentThemeContentData = ref<ThemeContentDataType>({
   components: [],
 })
 
+const createComponentData = (): ComponentData => {
+  return {
+    backendComponentCode: '',
+    componentConfig: {
+      content: {},
+      status: true,
+    },
+    componentName: '',
+    isRequiredAliasName: false,
+    aliasName: '',
+    id: 0,
+    sort: 0,
+    frontComponentIdentifyCode: '',
+  }
+}
+
 // 当前设置的组件
-const currentComponentData = ref<ComponentData>({
-  backendComponentCode: '',
-  componentConfig: {
-    content: {},
-    status: true,
-  },
-  componentName: '',
-  isRequiredAliasName: false,
-  aliasName: '',
-  id: 0,
-  sort: 0,
-  frontComponentIdentifyCode: '',
-})
+const currentComponentData = ref<ComponentData>(createComponentData())
 
 // 模板数据
 const themeContentData = ref<ThemeContentDataType[]>([])
@@ -144,18 +148,27 @@ const handlePasteComponent = () => {
 // 保存当前主题内容数据
 const handleSaveCurrentThemeContentData = () => {
   if (currentThemeContentComponentsData.value.length > 0) {
-    // 计算相同的backendComponentCode数量
+    // 计算相同的 backendComponentCode 数量
     const sameComponentCount = currentThemeContentComponentsData.value.filter(
       component => component.backendComponentCode === selectComponentData.value.backendComponentCode,
     ).length
-
-    // 设置frontComponentIdentifyCode
-    selectComponentData.value.frontComponentIdentifyCode = `${selectComponentData.value.backendComponentCode}${sameComponentCount}`
+    if (sameComponentCount > 0) {
+      // 如果存在相同组件，编号从 1 开始
+      selectComponentData.value.frontComponentIdentifyCode = `${selectComponentData.value.backendComponentCode}${sameComponentCount + 1}`
+    } else {
+      // 如果不存在相同组件，编号也从 1 开始
+      selectComponentData.value.frontComponentIdentifyCode = `${selectComponentData.value.backendComponentCode}1`
+    }
   } else {
-    selectComponentData.value.frontComponentIdentifyCode = `${selectComponentData.value.backendComponentCode}0`
+    selectComponentData.value.frontComponentIdentifyCode = `${selectComponentData.value.backendComponentCode}1`
   }
-  selectComponentData.value.sort = currentThemeContentComponentsData.value.length + 1
-  currentThemeContentComponentsData.value.push(selectComponentData.value)
+
+  const newComponentData = { ...selectComponentData.value } // 创建新对象副本
+  newComponentData.id = currentThemeContentComponentsData.value.length + 1
+  newComponentData.sort = currentThemeContentComponentsData.value.length + 1
+  currentThemeContentComponentsData.value.push(newComponentData)
+  // 重置 selectComponentData
+  selectComponentData.value = createComponentData()
   addComponentDialogVisible.value = false
 }
 
@@ -172,6 +185,7 @@ const handleSaveCurrentComponentData = async () => {
         item.aliasName = aliasName.value
       }
     })
+    currentComponentData.value = createComponentData()
     settingComponentDialogVisible.value = false
   } else {
     console.error('Component does not have getFormData method')
@@ -357,6 +371,7 @@ getThemeData()
       <!-- 使用Vue3的动态组件，根据backendComponentCode获取对应的组件，动态展示 -->
       <component
         :is="getComponent(currentComponentData.backendComponentCode)"
+        v-if="currentComponentData && currentComponentData.componentConfig"
         ref="currentComponentRef"
         :component-data="currentComponentData.componentConfig"
         v-bind="currentComponentData"
