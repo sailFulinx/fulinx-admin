@@ -45,7 +45,7 @@ const handleRemove = (index: number) => {
 }
 
 async function getFormData() {
-  if (form.content.text.length === 0) {
+  if (form.content.text.length === 0 || form.content.text[0] === '') {
     ElMessage.error('请输入文字内容')
     return false
   }

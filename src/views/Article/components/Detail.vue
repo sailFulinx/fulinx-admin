@@ -357,7 +357,7 @@ const createComponentData = (): ComponentData => {
 const selectComponentData = ref<ComponentData>(createComponentData())
 
 // 当前设置的组件
-const currentComponentData = ref<ComponentData>(createComponentData())
+const currentComponentData = ref<ComponentData | null>(null)
 
 const aliasName = ref<string>('')
 
@@ -403,8 +403,6 @@ const handleSaveCustomLayouts = () => {
 
   customLayouts.value.push(newComponentData)
 
-  console.log(customLayouts.value)
-
   // 重置 selectComponentData
   selectComponentData.value = createComponentData()
 
@@ -419,16 +417,17 @@ const handleSaveCurrentComponentData = async () => {
       return
     }
     customLayouts.value.map(item => {
-      if (item.frontComponentIdentifyCode === currentComponentData.value.frontComponentIdentifyCode) {
+      if (item.frontComponentIdentifyCode === currentComponentData.value?.frontComponentIdentifyCode) {
         item.componentConfig = formData
         item.aliasName = aliasName.value
       }
     })
-    currentComponentData.value = createComponentData()
-    settingComponentDialogVisible.value = false
   } else {
     console.error('Component does not have getFormData method')
   }
+  currentComponentRef.value = null
+  settingComponentDialogVisible.value = false
+  currentComponentData.value = null
 }
 
 const save = async () => {
@@ -714,7 +713,7 @@ onMounted(() => {
     </ElDialog>
 
     <ElDialog v-model="settingComponentDialogVisible" title="设置组件" width="70%">
-      <div v-if="currentComponentData.isRequiredAliasName">
+      <div v-if="currentComponentData?.isRequiredAliasName">
         <ElForm label-width="140px">
           <ElFormItem label="组件别名" required>
             <ElInput v-model="aliasName" placeholder="请输入组件别名" />

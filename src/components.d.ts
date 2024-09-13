@@ -26,7 +26,6 @@ declare module '@vue/runtime-core' {
     CommonReadContent: typeof import('./components/Theme/Components/CommonReadContent.vue')['default']
     CommonText: typeof import('./components/Theme/Components/CommonText.vue')['default']
     CommonVideo: typeof import('./components/Theme/Components/CommonVideo.vue')['default']
-    copy: typeof import('./components/Theme/Components/CommonText copy.vue')['default']
     EBtn: typeof import('./components/common/EBtn.vue')['default']
     Editor: typeof import('./components/common/Editor.vue')['default']
     Error: typeof import('./components/common/Error.vue')['default']

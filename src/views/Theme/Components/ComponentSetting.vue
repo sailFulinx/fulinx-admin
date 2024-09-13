@@ -65,7 +65,7 @@ const createComponentData = (): ComponentData => {
 }
 
 // 当前设置的组件
-const currentComponentData = ref<ComponentData>(createComponentData())
+const currentComponentData = ref<ComponentData | null>(null)
 
 // 模板数据
 const themeContentData = ref<ThemeContentDataType[]>([])
@@ -140,6 +140,9 @@ const handlePasteComponent = () => {
     },
   )
     .then(() => {
+      if (!currentComponentData.value) {
+        return
+      }
       currentComponentData.value.componentConfig = JSON.parse(pasteComponentData.value)
       pasteComponentDialogVisible.value = false
     })
@@ -180,7 +183,7 @@ const handleSaveCurrentComponentData = async () => {
       return
     }
     currentThemeContentComponentsData.value.map(item => {
-      if (item.frontComponentIdentifyCode === currentComponentData.value.frontComponentIdentifyCode) {
+      if (item.frontComponentIdentifyCode === currentComponentData.value?.frontComponentIdentifyCode) {
         item.componentConfig = formData
         item.aliasName = aliasName.value
       }
@@ -361,7 +364,7 @@ getThemeData()
           </div>
         </div>
       </template>
-      <div v-if="currentComponentData.isRequiredAliasName">
+      <div v-if="currentComponentData?.isRequiredAliasName">
         <ElForm label-width="140px">
           <ElFormItem label="组件别名" required>
             <ElInput v-model="aliasName" placeholder="请输入组件别名" />
