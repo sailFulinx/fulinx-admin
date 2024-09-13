@@ -118,12 +118,27 @@ const categoriesData = ref<ListCategoryRes>({
   total: 0,
 })
 
-const disableCategoryById = (categories, id) => {
+const disableAllChildren = (children: CategoryData[]) => {
+  if (!children || children.length === 0) {
+    return
+  }
+
+  children.forEach(child => {
+    child.disabled = true
+    if (child.children) {
+      disableAllChildren(child.children)
+    }
+  })
+}
+
+const disableCategoryById = (categories: CategoryData[], id: number) => {
   return categories.map(item => {
     if (item.id === id) {
       item.disabled = true
       // 如果当前节点的 id 匹配，设置所有子节点的 disabled 为 true
-      disableAllChildren(item.children)
+      if (item.children) {
+        disableAllChildren(item.children)
+      }
     }
 
     // 递归处理子节点
@@ -132,17 +147,6 @@ const disableCategoryById = (categories, id) => {
     }
 
     return item
-  })
-}
-
-const disableAllChildren = children => {
-  if (!children || children.length === 0) {
-    return
-  }
-
-  children.forEach(child => {
-    child.disabled = true
-    disableAllChildren(child.children)
   })
 }
 
@@ -215,15 +219,15 @@ const init = async () => {
 }
 
 init()
-const tagsViewStore = useTagsViewStore()
+// const tagsViewStore = useTagsViewStore()
 
-const deleteTagView = (refresh: boolean) => {
-  if (refresh) {
-    tagsViewStore.delCachedView()
-  }
-  tagsViewStore.delVisitedView(router.currentRoute.value)
-  router.push({ name: 'Category' })
-}
+// const deleteTagView = (refresh: boolean) => {
+//   if (refresh) {
+//     tagsViewStore.delCachedView()
+//   }
+//   tagsViewStore.delVisitedView(router.currentRoute.value)
+//   router.push({ name: 'Category' })
+// }
 
 const formRef = ref()
 const handleSave = async () => {
@@ -244,7 +248,7 @@ const handleSave = async () => {
   } else {
     await createCategory()
   }
-  deleteTagView(true)
+  // deleteTagView(true)
 }
 </script>
 
@@ -256,9 +260,9 @@ const handleSave = async () => {
           <span>{{ title }}</span>
         </div>
         <div>
-          <EBtn @click="deleteTagView(true)">
+          <!-- <EBtn @click="deleteTagView(true)">
             {{ $t('common.cancel') }}
-          </EBtn>
+          </EBtn> -->
           <EBtn type="primary" @click="handleSave">
             {{ $t('common.save') }}
           </EBtn>
@@ -285,32 +289,38 @@ const handleSave = async () => {
               />
             </div>
           </ElFormItem>
+
+          <ElFormItem :label="$t('category.status')" prop="status">
+            <ElSwitch v-model="form.status" />
+          </ElFormItem>
         </ElCard>
         <ElCard shadow="never">
           <template #header>
-            <div class="card-header">
-              <span>分类内容</span>
+            <div class="flex justify-between">
+              <div>分类内容</div>
+              <div class="flex items-center justify-start">
+                <ElSelect v-model="selectLanguage" placeholder="请选择" value-key="id" filterable clearable class="mr-3" style="width: 200px">
+                  <ElOption
+                    v-for="item in languages"
+                    :key="item.id"
+                    :label="item.languageName"
+                    :value="item"
+                  />
+                </ElSelect>
+                <EBtn size="default" plain type="primary" @click="handleAddContent">
+                  <Icon icon="ep:plus" class="mr-1" />
+                  新增语言
+                </EBtn>
+              </div>
             </div>
           </template>
-          <div class="flex mb-5 items-center justify-start">
-            <ElSelect v-model="selectLanguage" value-key="id" filterable clearable style="width: 200px">
-              <ElOption
-                v-for="language in languages"
-                :key="language.id"
-                :label="language.languageName"
-                :value="language"
-              />
-            </ElSelect>
-            <EBtn type="primary" @click="handleAddContent">
-              新增语言
-            </EBtn>
-          </div>
+
           <ElTabs v-model="activeLanguageTab">
             <ElTabPane
-              v-for="languageTab in languageTabs"
-              :key="languageTab"
-              :label="languageTab.languageName"
-              :name="languageTab.languageName"
+              v-for="item in languageTabs"
+              :key="item"
+              :label="item.languageName"
+              :name="item.languageName"
             >
               <ElFormItem label="语言" prop="categoryName">
                 <ElSelect v-model="languageTab.id">
@@ -337,14 +347,6 @@ const handleSave = async () => {
                   :placeholder="$t('category.placeholder.metaTItle')"
                 />
               </ElFormItem>
-              <ElFormItem :label="$t('category.metaKeywords')" prop="metaKeywords">
-                <ElInput
-                  v-model="form.metaKeywords"
-                  class="input-line"
-                  maxlength="155"
-                  :placeholder="$t('category.placeholder.metaKeywords')"
-                />
-              </ElFormItem>
               <ElFormItem :label="$t('category.metaDescription')" prop="metaDescription">
                 <ElInput
                   v-model="form.metaDescription"
@@ -360,9 +362,6 @@ const handleSave = async () => {
               </ElFormItem>
               <ElFormItem :label="$t('category.image')">
                 <UploadSingleImage ref="uploadRef" :image-data="form.categoryFileVo" class="mr-2" />
-              </ElFormItem>
-              <ElFormItem :label="$t('category.status')" prop="status">
-                <ElSwitch v-model="form.status" />
               </ElFormItem>
             </ElTabPane>
           </ElTabs>

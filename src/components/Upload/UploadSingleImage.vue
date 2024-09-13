@@ -70,7 +70,7 @@ const handleUpload = async ({ file }) => {
   loading.value = false
 }
 
-const setFileData = data => {
+const setFileData = (data: FileData) => {
   fileData.value = data
 }
 

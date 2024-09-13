@@ -39,7 +39,11 @@ export default {
     name: '分类',
     parentId: '上级分类',
     categoryName: '分类名称',
+    metaTitle: '元标题',
+    metaDescription: '元描述',
+    description: '描述',
     image: '分类图片',
+    status: '状态',
     placeholder: {
       categoryName: '请输入分类名称',
       categoryType: '请选择分类类型',

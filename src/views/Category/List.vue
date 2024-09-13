@@ -7,6 +7,9 @@ const { t: $t } = useLocale()
 const loading = reactive({
   init: false,
 })
+
+const tableRef = ref()
+
 const listPayload = reactive<CategoryListParams & Pagination>({
   categoryName: '',
   id: null,
@@ -64,11 +67,6 @@ const handleEdit = (val: CategoryData & CommonField) => {
   router.push({ name: 'EditCategory', params: { id: Number(val.id) } })
 }
 
-const handleDelete = async (val: CategoryData & CommonField) => {
-  deleteIds.value = [val.id]
-  await handleMultiDelete()
-}
-
 const handleMultiDelete = async () => {
   if (deleteIds.value.length === 0) {
     ElMessage({
@@ -90,6 +88,11 @@ const handleMultiDelete = async () => {
   loading.init = false
   deleteIds.value = []
 }
+
+const handleDelete = async (val: CategoryData & CommonField) => {
+  deleteIds.value = [val.id]
+  await handleMultiDelete()
+}
 </script>
 
 <template>
@@ -102,9 +105,11 @@ const handleMultiDelete = async () => {
           </div>
           <div>
             <EBtn @click="handleCreate">
+              <Icon icon="ep:plus" class="mr-1" />
               {{ $t('common.create') }}
             </EBtn>
             <EBtn type="danger" @click="handleMultiDelete">
+              <Icon icon="ep:delete" class="mr-1" />
               {{ $t('common.remove') }}
             </EBtn>
           </div>
@@ -126,12 +131,14 @@ const handleMultiDelete = async () => {
         <ElTableColumn ref="tableRef" type="selection" stripe row-key="id" width="55" />
         <ElTableColumn prop="id" :label="`${$t('common.id')}`" width="120" />
         <ElTableColumn prop="categoryName" :label="`${$t('category.categoryName')}`" />
-        <ElTableColumn fixed="right" :label="`${$t('common.action')}`" width="150">
+        <ElTableColumn fixed="right" :label="`${$t('common.action')}`" width="180">
           <template #default="scope">
             <EBtn size="small" type="primary" @click="handleEdit(scope.row)">
+              <Icon icon="ep:edit" class="mr-1" />
               {{ $t('common.edit') }}
             </EBtn>
             <EBtn size="small" type="danger" @click="handleDelete(scope.row)">
+              <Icon icon="ep:delete" class="mr-1" />
               {{ $t('common.remove') }}
             </EBtn>
           </template>

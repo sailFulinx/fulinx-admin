@@ -45,7 +45,7 @@ interface CategoryData {
   categorySlug?: string
   children?: (CategoryData & CommonField)[]
   categoryFileId: number | null
-  categoryFileVo?: (FileData & CommonField) | null
+  categoryFileVo: FileData
   linkUrl: string | null
   metaDescription: string
   metaKeywords: string
