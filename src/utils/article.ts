@@ -1,4 +1,4 @@
-import { articleCustomTypes, articleStatuses } from '@/data/article'
+import { articleStatuses } from '@/data/article'
 
 /**
  * 转换订单状态为文字
@@ -10,16 +10,6 @@ export function convertStatus(val: boolean) {
   let label = ''
   articleStatuses.map(item => {
     if (item.id === valResult) {
-      label = item.label
-    }
-  })
-  return label
-}
-
-export function convertCustomTypeValue(value: string) {
-  let label = ''
-  articleCustomTypes.map(item => {
-    if (item.value === value) {
       label = item.label
     }
   })

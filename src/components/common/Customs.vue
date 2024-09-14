@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { articleCustomTypes } from '@/data/article'
+import { customTypes } from '@/data/general'
 import { ElMessage } from 'element-plus'
 
 const emit = defineEmits(['getCustomData', 'cancelEditCustomData'])
@@ -112,7 +112,7 @@ defineExpose({
       </ElFormItem>
       <ElFormItem label="自定义信息内容" class="flex w-full mb-5" style="margin-bottom: 20px">
         <ElSelect v-model="form.customType" placeholder="请选择信息类型">
-          <ElOption v-for="item in articleCustomTypes" :key="item.id" :label="item.label" :value="item.value" />
+          <ElOption v-for="item in customTypes" :key="item.id" :label="item.label" :value="item.value" />
         </ElSelect>
       </ElFormItem>
       <ElFormItem v-if="form.customType === 'text'" label="文本内容" class="mb-20" style="margin-bottom: 20px">

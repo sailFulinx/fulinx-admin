@@ -1,8 +1,10 @@
 <script setup name="ProductDetail" lang="ts">
 import { createCategoryApi, editCategoryApi, listCategoryApi, showCategoryApi } from '@/api/category'
 import { useLocale } from '@/hooks/useLocale'
+import { useAppStore } from '@/stores/app'
 import { usePreferenceStore } from '@/stores/preference'
 import { useTagsViewStore } from '@/stores/tagsView'
+import { convertCustomTypeValue } from '@/utils/general'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({
@@ -18,58 +20,51 @@ const props = defineProps({
 
 const { t: $t } = useLocale()
 
+const sourceUrl = useFileRootUrl()
+
 const id = Number(useRoute().params.id as unknown)
 
 const languages = useGetLanguageList() as LanguageData[]
 
-const language = usePreferenceStore().preference?.language
+const selectLanguage = ref<LanguageData>(usePreferenceStore().preference?.language)
 
-const uploadRef = ref()
+const activeLanguageTab = ref<string>('')
+
+const languageTabs = ref<LanguageData[]>([])
+
+const uploadRefs = ref<(ComponentPublicInstance | null)[]>([])
+
+const editorRefs = ref<(ComponentPublicInstance | null)[]>([])
 
 const loading = reactive({
   init: false,
   categories: false,
 })
 
-const form = reactive<CategoryData>({
-  id: 0,
-  categoryDescription: '',
-  languageCode: '',
-  languageId: language.id,
-  categoryName: '',
-  categoryFileId: null,
-  linkUrl: '',
-  categoryFileVo: {
-    id: 0,
-    originalFileName: '',
-    fileName: '',
-    fileContentType: '',
-    fileExtensionName: '',
-    path: '',
-    fileUrl: '',
-    sha256: '',
-  },
-  metaDescription: '',
-  metaKeywords: '',
-  metaTitle: '',
-  parentId: null,
-  status: true,
-  parentIds: [],
-})
+// 创建category内容
+const createCategoryContent = (languageData: LanguageData): CategoryDetailItem => {
+  return {
+    languageId: languageData.id,
+    languageName: languageData.languageName,
+    categoryName: '',
+    categoryDescription: '',
+    categoryFileId: 0,
+    metaDescription: '',
+    metaTitle: '',
+  }
+}
 
-const rules = reactive({
-  parentId: [{ required: true, type: 'number', message: $t('category.rules.parentId'), trigger: 'blur' }],
-  categoryName: [{ required: true, type: 'string', message: $t('category.rules.categoryName'), trigger: 'blur' }],
-  metaTitle: [{ required: true, type: 'string', message: $t('category.rules.metaTitle'), trigger: 'blur' }],
-  status: [{ required: true, type: 'boolean', message: $t('category.rules.status'), trigger: 'blur' }],
-  isMenu: [{ required: true, type: 'boolean', message: $t('category.rules.isMenu'), trigger: 'blur' }],
-})
+// 创建category请求参数
+const createFormData = () => {
+  return {
+    parentId: 0,
+    parentIds: [],
+    status: true,
+    categoryDetailVoList: [createCategoryContent(selectLanguage.value)],
+  }
+}
 
-const selectLanguage = ref<LanguageData>({
-  id: 0,
-  code: '',
-  languageName: '',
-})
+const form = reactive<CategoryRequestParams>(createFormData())
 
 const cascaderProps = {
   value: 'id',
@@ -78,10 +73,6 @@ const cascaderProps = {
   children: 'children',
   disabled: 'disabled',
 }
-
-const activeLanguageTab = ref<string>('')
-
-const languageTabs = ref<LanguageData[]>([])
 
 watch(
   () => usePreferenceStore().preference?.language,
@@ -94,11 +85,66 @@ watch(
   { immediate: true },
 )
 
-const handleAddContent = () => {
+const customVisible = ref(false)
+
+const currentCustomData = ref({
+  id: 0,
+  customTitle: '',
+  customContent: '',
+})
+
+const customRef = ref()
+
+const customs = ref<any[]>([])
+
+const initCustomData = () => {
+  currentCustomData.value = {
+    id: 0,
+    customTitle: '',
+    customContent: '',
+  }
+  customRef.value.setFormData(currentCustomData.value)
+}
+
+const handleAddCustom = () => {
+  customVisible.value = true
+}
+
+const handleRemoveCustom = (index: number) => {
+  customs.value.splice(index, 1)
+}
+
+const handleEditCustom = (index: number) => {
+  customVisible.value = true
+  currentCustomData.value = customs.value[index]
+  customRef.value.setFormData(currentCustomData.value)
+}
+
+const cancelEditCustomData = () => {
+  customVisible.value = false
+  initCustomData()
+}
+
+const getCustomData = (val: CustomDataType) => {
+  if (val.id === 0) {
+    val.id = customs.value.length + 1
+    customs.value.push(val)
+  } else {
+    customs.value.forEach((item, index) => {
+      if (item.id === val.id) {
+        customs.value[index] = val
+      }
+    })
+  }
+  initCustomData()
+  customVisible.value = false
+}
+
+const handleAddCategoryDetail = () => {
   // 查询languageTabs中存不存在此languageName, 如果存在，抛出错误，不存在则添加
   let valid = true
-  languageTabs.value.forEach(item => {
-    if (item.languageName === selectLanguage.value.languageName) {
+  form.categoryDetailVoList.forEach(item => {
+    if (item.languageId === selectLanguage.value.id) {
       ElMessage({
         type: 'error',
         message: $t('category.error.languageNameExist'),
@@ -109,7 +155,7 @@ const handleAddContent = () => {
   if (!valid) {
     return
   }
-  languageTabs.value.push(selectLanguage.value)
+  form.categoryDetailVoList.push(createCategoryContent(selectLanguage.value))
 }
 
 // Language
@@ -184,11 +230,21 @@ const getCategoryData = async () => {
     loading.init = false
     throw error
   })
+
   Object.assign(form, data)
-  console.log(form)
+  form.categoryDetailVoList = data.categoryDetailDoList
+
   if (form.parentIds && form.parentIds[0] !== 0) {
     form.parentIds.unshift(0)
   }
+  await nextTick(() => {
+    form.categoryDetailVoList.forEach((item, index) => {
+      if (editorRefs.value[index]) {
+        editorRefs.value[index].setEditData(item.categoryDescription)
+      }
+    })
+  })
+
   loading.init = false
 }
 
@@ -232,17 +288,39 @@ init()
 const formRef = ref()
 const handleSave = async () => {
   form.parentId = form.parentIds?.at(-1) as number
-  const valid = await formRef.value.validate((valid: boolean) => {
-    if (!valid) {
+  // 校验categoryRequestForm下的所有表单项
+  form.categoryDetailVoList.forEach((item, index) => {
+    if (!item.categoryName) {
+      ElMessage({
+        type: 'error',
+        message: $t('category.error.categoryName'),
+      })
       return false
     }
+    if (!item.languageId) {
+      ElMessage({
+        type: 'error',
+        message: $t('category.error.languageName'),
+      })
+      return false
+    }
+    if (!item.metaTitle) {
+      ElMessage({
+        type: 'error',
+        message: $t('category.error.metaTitle'),
+      })
+      return false
+    }
+    if (uploadRefs.value[index]) {
+      const categoryFileVo = uploadRefs.value[index].getFileData()
+      item.categoryFileId = categoryFileVo.fileData.id
+    }
+    if (editorRefs.value[index]) {
+      item.categoryDescription = editorRefs.value[index].getEditData()
+    }
+    return item
   })
-  if (!valid) {
-    return false
-  }
-  console.log(uploadRef.value)
-  const categoryFileVo = uploadRef.value.getFileData()
-  form.categoryFileId = categoryFileVo.fileData.id
+
   if (props.isEdit) {
     await editCategory()
   } else {
@@ -264,6 +342,7 @@ const handleSave = async () => {
             {{ $t('common.cancel') }}
           </EBtn> -->
           <EBtn type="primary" @click="handleSave">
+            <Icon icon="ant-design:save-outlined" class="mr-1" />
             {{ $t('common.save') }}
           </EBtn>
         </div>
@@ -271,7 +350,7 @@ const handleSave = async () => {
     </div>
 
     <div v-if="!loading.init" class="view-main theme-card">
-      <ElForm ref="formRef" :model="form" :rules="rules" label-width="120px">
+      <ElForm ref="formRef" :model="form" label-width="120px">
         <ElCard class="mb-5" shadow="never">
           <template #header>
             <div class="card-header">
@@ -290,7 +369,7 @@ const handleSave = async () => {
             </div>
           </ElFormItem>
 
-          <ElFormItem :label="$t('category.status')" prop="status">
+          <ElFormItem :label="$t('category.status')" prop="status" required>
             <ElSwitch v-model="form.status" />
           </ElFormItem>
         </ElCard>
@@ -307,7 +386,7 @@ const handleSave = async () => {
                     :value="item"
                   />
                 </ElSelect>
-                <EBtn size="default" plain type="primary" @click="handleAddContent">
+                <EBtn size="default" plain type="primary" @click="handleAddCategoryDetail">
                   <Icon icon="ep:plus" class="mr-1" />
                   新增语言
                 </EBtn>
@@ -317,19 +396,14 @@ const handleSave = async () => {
 
           <ElTabs v-model="activeLanguageTab">
             <ElTabPane
-              v-for="item in languageTabs"
+              v-for="(item, index) in form.categoryDetailVoList"
               :key="item"
               :label="item.languageName"
               :name="item.languageName"
             >
-              <ElFormItem label="语言" prop="categoryName">
-                <ElSelect v-model="languageTab.id">
-                  <ElOption v-for="item in languages" :key="item.id" :value="item.id" :label="item.languageName" />
-                </ElSelect>
-              </ElFormItem>
-              <ElFormItem :label="$t('category.categoryName')" prop="categoryName">
+              <ElFormItem :label="$t('category.categoryName')" prop="categoryName" required>
                 <ElInput
-                  v-model="form.categoryName"
+                  v-model="item.categoryName"
                   class="input-line"
                   clearable
                   show-word-limit
@@ -338,9 +412,9 @@ const handleSave = async () => {
                   :placeholder="$t('category.placeholder.categoryName')"
                 />
               </ElFormItem>
-              <ElFormItem :label="$t('category.metaTitle')" prop="metaTitle">
+              <ElFormItem :label="$t('category.metaTitle')" prop="metaTitle" required>
                 <ElInput
-                  v-model="form.metaTitle"
+                  v-model="item.metaTitle"
                   class="input-line"
                   minlength="1"
                   maxlength="60"
@@ -349,7 +423,7 @@ const handleSave = async () => {
               </ElFormItem>
               <ElFormItem :label="$t('category.metaDescription')" prop="metaDescription">
                 <ElInput
-                  v-model="form.metaDescription"
+                  v-model="item.metaDescription"
                   class="input-line"
                   type="textarea"
                   rows="4"
@@ -358,10 +432,70 @@ const handleSave = async () => {
                 />
               </ElFormItem>
               <ElFormItem :label="$t('category.description')" prop="categoryDescription">
-                <Editor v-model="form.categoryDescription" class="z-0" />
+                <Editor :ref="(el) => editorRefs[index] = el" v-model="item.categoryDescription" />
               </ElFormItem>
               <ElFormItem :label="$t('category.image')">
-                <UploadSingleImage ref="uploadRef" :image-data="form.categoryFileVo" class="mr-2" />
+                <UploadSingleImage :ref="(el) => uploadRefs[index] = el" :image-data="item.categoryFileVo" class="mr-2" />
+              </ElFormItem>
+              <ElFormItem label="自定义信息" class="flex flex-wrap">
+                <div class="w-full mb-5">
+                  <EBtn @click="handleAddCustom">
+                    添加自定义信息
+                  </EBtn>
+                </div>
+                <div v-if="customs.length > 0" class="w-full mb-5">
+                  <ElTable :data="customs">
+                    <ElTableColumn label="标题" prop="customTitle" />
+                    <ElTableColumn label="类型">
+                      <template #default="scope">
+                        <span>{{ convertCustomTypeValue(scope.row.customType) }}</span>
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn label="内容" prop="customContent">
+                      <template #default="scope">
+                        <div v-if="scope.row.customType === 'text'">
+                          {{ scope.row.customContent }}
+                        </div>
+                        <div v-if="scope.row.customType === 'editor'">
+                          <div v-html="scope.row.customContent" />
+                        </div>
+                        <div v-if="scope.row.customType === 'image'">
+                          <div v-for="item in scope.row.customContent" :key="item">
+                            <div class="flex justify-start mb-5 space-x-0 sm:space-x-2 overflow-x-auto">
+                              <ElImage class="w-32 sm:w-40" :src="`${sourceUrl}${item.fileUrl}`" fit="contain" />
+                            </div>
+                          </div>
+                        </div>
+                        <div v-if="scope.row.customType === 'video'">
+                          <div class="flex justify-start mb-5 space-x-0 sm:space-x-2 overflow-x-auto">
+                            <video
+                              class="w-32 sm:w-40"
+                              :src="`${sourceUrl}${scope.row.customContent.fileUrl}`"
+                              fit="contain"
+                            />
+                          </div>
+                        </div>
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn label="操作">
+                      <template #default="scope">
+                        <EBtn @click="handleEditCustom(scope.$index)">
+                          修改
+                        </EBtn>
+                        <EBtn @click="handleRemoveCustom(scope.$index)">
+                          删除
+                        </EBtn>
+                      </template>
+                    </ElTableColumn>
+                  </ElTable>
+                </div>
+                <div v-show="customVisible" class="w-full mb-5">
+                  <Customs
+                    ref="customRef"
+                    @get-custom-data="getCustomData"
+                    @cancel-edit-custom-data="cancelEditCustomData"
+                  />
+                </div>
               </ElFormItem>
             </ElTabPane>
           </ElTabs>

@@ -6,10 +6,9 @@ import { fetchLanguageListApi } from '@/api/language'
 import { articleStatuses } from '@/data/article'
 import { components } from '@/data/component'
 import { useTagsViewStore } from '@/stores/tagsView'
-import { convertCustomTypeValue } from '@/utils/article'
+import { convertCustomTypeValue } from '@/utils/general'
 import { ElInput, ElMessage } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
-import Customs from './Customs.vue'
 
 const props = defineProps({
   isEdit: {
@@ -24,7 +23,7 @@ const uploadRef = ref()
 
 const vueDraggableRef = ref()
 
-const sourceUrl = import.meta.env.VITE_RESOURCE_URL
+const sourceUrl = useFileRootUrl()
 
 const rules = reactive({
   articleType: [{ required: true, type: 'number', message: '内容类型必填', trigger: 'change' }],

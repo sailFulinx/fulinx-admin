@@ -25,23 +25,7 @@ const initForm = () => {
   })
 }
 
-const languagePayload = reactive<LanguageListParams>({
-  languageCode: null,
-})
-
-const languages = ref<ListLanguageRes>({
-  list: [],
-  total: 0,
-})
-
-const getLanguageList = async () => {
-  const { data } = await fetchLanguageListApi(languagePayload).catch(error => {
-    throw error
-  })
-  languages.value.list = data.list
-}
-
-getLanguageList()
+const languages = jsonParse(useGetStorage('languages')) as LanguageData[]
 
 const openDialog = () => {
   initForm()
@@ -71,7 +55,7 @@ defineExpose({
     <ElForm ref="formRef" :model="form" label-width="120px">
       <ElFormItem label="默认内容语言">
         <ElSelect v-model="form.language" value-key="id" filterable>
-          <ElOption v-for="item in languages.list" :key="item.id" :label="item.languageName" :value="item" />
+          <ElOption v-for="item in languages" :key="item.id" :label="item.languageName" :value="item" />
         </ElSelect>
       </ElFormItem>
     </ElForm>

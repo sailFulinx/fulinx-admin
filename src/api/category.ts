@@ -1,6 +1,6 @@
 import request from '@/utils/axios'
 
-export function createCategoryApi(data: CreateCategoryParams): Promise<IResponse<CategoryData & CommonField>> {
+export function createCategoryApi(data: CategoryRequestParams): Promise<IResponse<CategoryData & CommonField>> {
   return request.post({
     url: 'server-side/category',
     data,
@@ -16,10 +16,7 @@ export function removeCategoryApi(data: RemoveCategoryParams): Promise<IResponse
   })
 }
 
-export function editCategoryApi(
-  id: number,
-  data: UpdateCategoryParams,
-): Promise<IResponse<CategoryData & CommonField>> {
+export function editCategoryApi(id: number, data: CategoryRequestParams): Promise<IResponse<CategoryData & CommonField>> {
   return request.put({
     url: `server-side/category/${id}`,
     data,
@@ -27,7 +24,7 @@ export function editCategoryApi(
   })
 }
 
-export function showCategoryApi(id: number): Promise<IResponse<CategoryData & CommonField>> {
+export function showCategoryApi(id: number): Promise<IResponse<CategoryShowData & CommonField>> {
   return request.get({
     url: `server-side/category/${id}`,
     token: true,

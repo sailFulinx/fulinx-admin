@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
-
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+
 import { ElMessage } from 'element-plus'
 
 const mode = 'default'
@@ -113,6 +113,7 @@ const getEditData = () => {
 }
 
 const setEditData = (data: any) => {
+  console.log(data)
   valueHtml.value = data
 }
 
@@ -128,7 +129,7 @@ defineExpose({
 
     <Editor
       v-model="valueHtml"
-      style="height: 340px; overflow-y: hidden"
+      style="min-height:320px; overflow-y: hidden"
       :default-config="editorConfig"
       :mode="mode"
       @on-created="handleCreated"
@@ -137,4 +138,5 @@ defineExpose({
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+</style>
