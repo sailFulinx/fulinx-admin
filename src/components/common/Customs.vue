@@ -36,7 +36,7 @@ const setFormData = async (data: CustomDataType) => {
   form.customType = data.customType
   if (form.customType === 'editor') {
     await nextTick()
-    customEditorRef.value.setEditData(data.customContent)
+    customEditorRef.value.setEditorData(data.customContent)
   }
 
   if (form.customType === 'image') {
@@ -67,7 +67,7 @@ const saveFormData = async () => {
   try {
     if (form.customType === 'editor') {
       await nextTick()
-      form.customContent = customEditorRef?.value?.getEditData()
+      form.customContent = customEditorRef?.value?.getEditorData()
     }
     if (form.customType === 'image') {
       await nextTick()

@@ -1,4 +1,5 @@
 <script setup name="ProductDetail" lang="ts">
+import { resolve } from 'node:path'
 import { createCategoryApi, editCategoryApi, listCategoryApi, showCategoryApi } from '@/api/category'
 import { useLocale } from '@/hooks/useLocale'
 import { useAppStore } from '@/stores/app'
@@ -224,6 +225,20 @@ getCategoriesData()
 
 const handleChangeCategory = () => {}
 
+const itemRefs: Array<any> = []
+const setItemRefs = (el: HTMLElement | ComponentPublicInstance | HTMLAttributes, item: number) => {
+  if (el) {
+    itemRefs.push({
+      id: item,
+      el,
+    })
+  }
+}
+
+// onMounted(() => {
+//   console.log(itemRefs)
+// })
+
 const getCategoryData = async () => {
   loading.init = true
   const { data } = await showCategoryApi(id).catch(error => {
@@ -237,16 +252,24 @@ const getCategoryData = async () => {
   if (form.parentIds && form.parentIds[0] !== 0) {
     form.parentIds.unshift(0)
   }
-  await nextTick(() => {
-    form.categoryDetailVoList.forEach((item, index) => {
-      if (editorRefs.value[index]) {
-        editorRefs.value[index].setEditData(item.categoryDescription)
-      }
-    })
-  })
-
   loading.init = false
+  return form
 }
+
+onMounted(async () => {
+  console.log(editorRefs?.value)
+  // console.log(props.isEdit)
+  if (props.isEdit) {
+    const res = await getCategoryData()
+    await nextTick(() => {
+      res.categoryDetailVoList.forEach((item, index) => {
+        if (editorRefs?.value[index]) {
+          editorRefs?.value[index].setEditorData(item.categoryDescription)
+        }
+      })
+    })
+  }
+})
 
 const createCategory = async () => {
   loading.init = true
@@ -268,13 +291,13 @@ const editCategory = async () => {
   loading.init = false
 }
 
-const init = async () => {
-  if (props.isEdit) {
-    await getCategoryData()
-  }
-}
+// const init = async () => {
+//   if (props.isEdit) {
+//     await getCategoryData()
+//   }
+// }
 
-init()
+// await init()
 // const tagsViewStore = useTagsViewStore()
 
 // const deleteTagView = (refresh: boolean) => {
@@ -316,7 +339,7 @@ const handleSave = async () => {
       item.categoryFileId = categoryFileVo.fileData.id
     }
     if (editorRefs.value[index]) {
-      item.categoryDescription = editorRefs.value[index].getEditData()
+      item.categoryDescription = editorRefs.value[index].getEditorData()
     }
     return item
   })
@@ -378,13 +401,16 @@ const handleSave = async () => {
             <div class="flex justify-between">
               <div>分类内容</div>
               <div class="flex items-center justify-start">
-                <ElSelect v-model="selectLanguage" placeholder="请选择" value-key="id" filterable clearable class="mr-3" style="width: 200px">
-                  <ElOption
-                    v-for="item in languages"
-                    :key="item.id"
-                    :label="item.languageName"
-                    :value="item"
-                  />
+                <ElSelect
+                  v-model="selectLanguage"
+                  placeholder="请选择"
+                  value-key="id"
+                  filterable
+                  clearable
+                  class="mr-3"
+                  style="width: 200px"
+                >
+                  <ElOption v-for="item in languages" :key="item.id" :label="item.languageName" :value="item" />
                 </ElSelect>
                 <EBtn size="default" plain type="primary" @click="handleAddCategoryDetail">
                   <Icon icon="ep:plus" class="mr-1" />
@@ -432,10 +458,14 @@ const handleSave = async () => {
                 />
               </ElFormItem>
               <ElFormItem :label="$t('category.description')" prop="categoryDescription">
-                <Editor :ref="(el) => editorRefs[index] = el" v-model="item.categoryDescription" />
+                <Editor ref="editorRefs" v-model="item.categoryDescription" />
               </ElFormItem>
               <ElFormItem :label="$t('category.image')">
-                <UploadSingleImage :ref="(el) => uploadRefs[index] = el" :image-data="item.categoryFileVo" class="mr-2" />
+                <UploadSingleImage
+                  :ref="el => (uploadRefs[index] = el)"
+                  :image-data="item.categoryFileVo"
+                  class="mr-2"
+                />
               </ElFormItem>
               <ElFormItem label="自定义信息" class="flex flex-wrap">
                 <div class="w-full mb-5">

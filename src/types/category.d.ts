@@ -32,13 +32,13 @@ interface RemoveCategoryParams {
 
 interface CategoryListParams {
   /* ID */
-  id?: number
+  id?: number | null
 
   /* Language Code */
-  languageCode?: string
+  languageCode?: string | null
 
   /* Category Name */
-  categoryName?: string
+  categoryName?: string | null
 
   /* Status, 0: Disabled 1: Enabled */
   status?: boolean

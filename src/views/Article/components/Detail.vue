@@ -169,7 +169,7 @@ const getArticleData = async () => {
   loading.init = true
   try {
     const { data } = await showArticle(id)
-    editorRef.value.setEditData(data.articleDescription)
+    editorRef.value.setEditorData(data.articleDescription)
     selectedCategoryValue.value = data.categoryIds
     tags.value = data.tags
     if (data.fileList) {
@@ -454,7 +454,7 @@ const save = async () => {
     articleForm.value.customs = JSON.stringify(customLayouts.value)
   } else {
     articleForm.value.customs = JSON.stringify(customs.value)
-    articleForm.value.articleDescription = editorRef.value.getEditData()
+    articleForm.value.articleDescription = editorRef.value.getEditorData()
     const files = uploadRef.value.getFileData()
     if (files.fileDataList && files.fileDataList.length > 0) {
       files.fileDataList.map((item: FileData) => {

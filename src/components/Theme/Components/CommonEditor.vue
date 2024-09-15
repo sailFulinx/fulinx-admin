@@ -34,7 +34,7 @@ watch(
 )
 
 async function getFormData() {
-  form.content.richText = editorRef.value.getEditData()
+  form.content.richText = editorRef.value.getEditorData()
   if (form.content.richText === '') {
     ElMessage.error('请输入文字内容')
     return false
@@ -45,7 +45,7 @@ async function getFormData() {
 async function setFormData(formData: FormData) {
   await nextTick()
   form.content.richText = formData.content.richText
-  editorRef.value.setEditData(form.content.richText)
+  editorRef.value.setEditorData(form.content.richText)
   form.status = formData.status
 }
 

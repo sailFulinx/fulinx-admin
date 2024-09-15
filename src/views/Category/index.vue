@@ -1,10 +1,7 @@
 <script setup name="Category" lang="ts">
 import { paginationCategoryApi, removeCategoryApi } from '@/api/category'
 import { useLocale } from '@/hooks/useLocale'
-import { usePreferenceStore } from '@/stores/preference'
-
 import { ElMessage } from 'element-plus'
-import CategoryDialog from './Components/CategoryDialog.vue'
 
 const { t: $t } = useLocale()
 const loading = reactive({
@@ -14,11 +11,8 @@ const loading = reactive({
 const tableRef = ref()
 
 const listPayload = reactive<CategoryListParams & Pagination>({
-  categoryName: null,
-  languageId: usePreferenceStore().preference?.language?.id,
+  categoryName: '',
   id: null,
-  status: null,
-  isDelete: null,
   pageNumber: 1,
   pageSize: 20,
 })
@@ -39,16 +33,6 @@ const getList = async () => {
 }
 getList()
 
-watch(
-  () => usePreferenceStore().preference?.language?.id,
-  val => {
-    if (val) {
-      listPayload.languageId = val
-      getList()
-    }
-  },
-)
-
 const paginationList = (val: PaginationComponentData) => {
   if (val) {
     listPayload.pageSize = val.limit
@@ -56,8 +40,6 @@ const paginationList = (val: PaginationComponentData) => {
   }
   getList()
 }
-
-const categoryDialogRef = ref()
 
 const selection = ref<CategoryData & CommonField[]>()
 
@@ -76,15 +58,11 @@ const handleSelectionChange = (e: CategoryData & CommonField[]) => {
 }
 
 const handleCreate = () => {
-  categoryDialogRef.value.openDialog(false)
+  router.push({ name: 'CreateCategory' })
 }
 
 const handleEdit = (val: CategoryData & CommonField) => {
-  categoryDialogRef.value.openDialog(true, val)
-}
-
-const handleCreateSubCategory = (val: CategoryData & CommonField) => {
-  categoryDialogRef.value.openDialog(false, val)
+  router.push({ name: 'EditCategory', params: { id: Number(val.id) } })
 }
 
 const handleMultiDelete = async () => {
@@ -120,29 +98,16 @@ const handleDelete = async (val: CategoryData & CommonField) => {
     <div class="view-header">
       <Sticky>
         <div class="flex justify-between">
-          <div class="flex items-center">
-            <div class="mr-3">
-              {{ $t('category.name') }}
-            </div>
-            <div class="flex items-center">
-              <ElInput
-                v-model="listPayload.categoryName"
-                class="mr-3"
-                clearable
-                style="width: 300px"
-                :placeholder="`请输入${$t('category.categoryName')}`"
-                @clear="getList"
-              />
-              <EBtn type="default" plain @click="getList">
-                <Icon icon="ep:search" />
-              </EBtn>
-            </div>
+          <div>
+            <span>{{ $t('router.category') }}</span>
           </div>
           <div>
             <EBtn @click="handleCreate">
+              <Icon icon="ep:plus" class="mr-1" />
               {{ $t('common.create') }}
             </EBtn>
             <EBtn type="danger" @click="handleMultiDelete">
+              <Icon icon="ep:delete" class="mr-1" />
               {{ $t('common.remove') }}
             </EBtn>
           </div>
@@ -164,16 +129,15 @@ const handleDelete = async (val: CategoryData & CommonField) => {
         <ElTableColumn ref="tableRef" type="selection" stripe row-key="id" width="55" />
         <ElTableColumn prop="id" :label="`${$t('common.id')}`" width="120" />
         <ElTableColumn prop="categoryName" :label="`${$t('category.categoryName')}`" />
-        <ElTableColumn fixed="right" :label="`${$t('common.action')}`" width="230">
+        <ElTableColumn fixed="right" :label="`${$t('common.action')}`" width="180">
           <template #default="scope">
-            <EBtn text type="default" @click="handleCreateSubCategory(scope.row)">
-              <Icon icon="ep:plus" />
+            <EBtn size="small" type="primary" @click="handleEdit(scope.row)">
+              <Icon icon="ep:edit" class="mr-1" />
+              {{ $t('common.edit') }}
             </EBtn>
-            <EBtn text type="primary" @click="handleEdit(scope.row)">
-              <Icon icon="ep:edit-pen" />
-            </EBtn>
-            <EBtn text type="danger" @click="handleDelete(scope.row)">
-              <Icon icon="ep:delete" />
+            <EBtn size="small" type="danger" @click="handleDelete(scope.row)">
+              <Icon icon="ep:delete" class="mr-1" />
+              {{ $t('common.remove') }}
             </EBtn>
           </template>
         </ElTableColumn>
@@ -186,8 +150,6 @@ const handleDelete = async (val: CategoryData & CommonField) => {
         :total="listData.total"
         @pagination="paginationList"
       />
-
-      <CategoryDialog ref="categoryDialogRef" @get-list="getList" />
     </div>
   </div>
 </template>

@@ -91,18 +91,8 @@ export const asyncRouterMap: AppRouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'list1',
-        component: () => import('@/views/Category/index.vue'),
-        name: 'CategoryList1',
-        meta: {
-          title: $t('router.category'),
-          icon: 'ant-design:appstore-outlined',
-          noCache: true,
-        },
-      },
-      {
         path: 'list',
-        component: () => import('@/views/Category/List.vue'),
+        component: () => import('@/views/Category/index.vue'),
         name: 'CategoryList',
         meta: {
           title: $t('router.category'),

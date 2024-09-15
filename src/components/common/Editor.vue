@@ -108,18 +108,18 @@ const customPaste = (editor: any, event: any, callback: any) => {
   // callback(true)
 }
 
-const getEditData = () => {
+const getEditorData = () => {
   return valueHtml.value
 }
 
-const setEditData = (data: any) => {
+const setEditorData = (data: any) => {
   console.log(data)
   valueHtml.value = data
 }
 
 defineExpose({
-  getEditData,
-  setEditData,
+  getEditorData,
+  setEditorData,
 })
 </script>
 
